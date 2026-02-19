@@ -1,1 +1,1 @@
-require('claudecode').setup()
+require("claudecode").setup()

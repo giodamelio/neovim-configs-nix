@@ -21,13 +21,15 @@
       + builtins.concatStringsSep "\n" (map (f: "luafile ${f}") luaModules);
   };
 in
-  if runtimeDeps == [] then
-    pkgs.wrapNeovimUnstable pkgs.neovim-unwrapped nvimConfig
+  if runtimeDeps == []
+  then pkgs.wrapNeovimUnstable pkgs.neovim-unwrapped nvimConfig
   else
     pkgs.symlinkJoin {
       name = "nvim";
       meta.mainProgram = "nvim";
-      paths = [
-        (pkgs.wrapNeovimUnstable pkgs.neovim-unwrapped nvimConfig)
-      ] ++ runtimeDeps;
+      paths =
+        [
+          (pkgs.wrapNeovimUnstable pkgs.neovim-unwrapped nvimConfig)
+        ]
+        ++ runtimeDeps;
     }

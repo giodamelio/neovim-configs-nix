@@ -35,7 +35,6 @@
     };
   };
 
-
   vim-mint = pkgs.vimUtils.buildVimPlugin {
     pname = "vim-mint";
     version = "2025-11-10";
