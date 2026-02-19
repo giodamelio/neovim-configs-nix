@@ -43,6 +43,11 @@
         inherit pkgs vimPlugins;
       };
 
+      # Micro variant — smallest config with fuzzy finding only
+      micro = import ./variants/micro.nix {
+        inherit pkgs;
+      };
+
       # Export vim plugins namespaced like nixpkgs
       "vimPlugins.gitlinker-nvim" = vimPlugins.gitlinker-nvim;
       "vimPlugins.stay-centered-nvim" = vimPlugins.stay-centered-nvim;

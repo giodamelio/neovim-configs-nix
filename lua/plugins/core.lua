@@ -316,7 +316,7 @@ local snacks_config = {
 }
 
 -- Only enable image support in the full variant
-if vim.g.neovim_variant ~= "light" then
+if vim.g.neovim_variant ~= "full" then
 	snacks_config.image = {
 		enable = false,
 	}
