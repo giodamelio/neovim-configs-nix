@@ -21,6 +21,8 @@ nix flake update
 
 There are no tests or linters for this project itself.
 
+Always run `nix fmt` after making edits to format the codebase with treefmt.
+
 ## Architecture
 
 **Nix layer** (`flake.nix` → `package.nix` → `plugins.nix`):
