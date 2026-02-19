@@ -7,12 +7,17 @@
     # Unison Programming Language support
     unison-lang.url = "github:giodamelio/unison-nix/giodamelio/init-ucm-desktop";
     unison-lang.inputs.nixpkgs.follows = "nixpkgs";
+
+    # Formatting
+    treefmt-nix.url = "github:numtide/treefmt-nix";
+    treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = {
-    self,
     nixpkgs,
     unison-lang,
+    treefmt-nix,
+    ...
   }: let
     supportedSystems = ["x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin"];
     forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
@@ -45,6 +50,21 @@
 
       # Also export the treesitter grammar
       "treeSitterPlugins.tree-sitter-surrealdb" = vimPlugins.tree-sitter-surrealdb;
+    });
+
+    formatter = forAllSystems (system: let
+      pkgs = import nixpkgs {inherit system;};
+      treefmtEval = treefmt-nix.lib.evalModule pkgs ./treefmt.nix;
+    in
+      treefmtEval.config.build.wrapper);
+
+    devShells = forAllSystems (system: let
+      pkgs = import nixpkgs {inherit system;};
+      treefmtEval = treefmt-nix.lib.evalModule pkgs ./treefmt.nix;
+    in {
+      default = pkgs.mkShell {
+        packages = [treefmtEval.config.build.wrapper];
+      };
     });
   };
 }
