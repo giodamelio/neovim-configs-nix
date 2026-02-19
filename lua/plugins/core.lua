@@ -12,26 +12,10 @@ require('luasnip.loaders.from_vscode').lazy_load()
 local lualine = require('lualine')
 local default_config = lualine.get_config()
 
--- Get the current session name
--- local function get_session_name()
---   local current_session_path = vim.api.nvim_get_vvar('this_session')
---   if current_session_path ~= "" then
---     local session_name = vim.fn.fnamemodify(current_session_path, ':t')
---     -- Remove file extension if present
---     session_name = session_name:gsub("%.vim$", "")
---     return "📁 " .. session_name
---   end
---   return ""
--- end
-
 -- Enable lualine
 local config = vim.tbl_deep_extend('force', default_config, {
   sections = {
     lualine_c = { 'filename', 'lsp_progress' },
-    -- TODO: make this actually work at somepoint
-    -- lualine_y = {
-    --   get_session_name,
-    -- },
   },
   winbar = {
     lualine_c = {
@@ -71,49 +55,9 @@ gl.setup({
 
 neogit.setup()
 
--- Avante
-require('avante_lib').load()
-require('avante').setup()
-
 -- Oil
 require('oil').setup({
   columns = { 'icon', 'permissions', 'size' },
-})
-
--- Open Oil if no file/directory is specified
--- vim.api.nvim_create_autocmd('VimEnter', {
---   callback = function()
---     if vim.fn.argc() == 0 then vim.defer_fn(function() require('oil').open() end, 10) end
---   end,
--- })
-
--- NeoTest
-require('neotest').setup({
-  adapters = {
-    require('neotest-rust'),
-    require('neotest-elixir'),
-    require('neotest-go'),
-    require('neotest-deno'),
-    require('neotest-rspec'),
-    require('neotest-python'),
-  },
-})
-
--- Elixir Tools
-require('elixir').setup({
-  nextls = {
-    enable = false,
-    cmd = 'nextls',
-    init_options = {
-      experimental = {
-        completions = {
-          enable = true,
-        },
-      },
-    },
-  },
-  elixirls = { enable = false },
-  projectionist = { enable = true },
 })
 
 -- Other
@@ -281,57 +225,41 @@ require('other-nvim').setup({
   },
 })
 
--- Parrot
--- require('parrot').setup({
---   providers = {
---     openai = {
---       api_key = os.getenv("OPENAI_API_KEY"),
---     },
---     anthropic = {
---       api_key = os.getenv("ANTHROPIC_API_KEY"),
---     },
---   },
---
---   chat_shortcut_respond = { modes = { 'n', 'i', 'v', 'x' }, shortcut = '<C-Enter>' },
--- })
-
 -- Snacks setup
 local snacks = require('snacks')
 
-snacks.setup({
+local snacks_config = {
   dashboard = {
     pane_gap = 4,
     preset = {
       keys = {
-        { icon = ' ', key = 'f', desc = 'Find File', action = ":lua Snacks.dashboard.pick('files')" },
-        { icon = ' ', key = 'g', desc = 'Find Text', action = ":lua Snacks.dashboard.pick('live_grep')" },
-        { icon = ' ', key = 'r', desc = 'Recent Files', action = ":lua Snacks.dashboard.pick('oldfiles')" },
+        { icon = ' ', key = 'f', desc = 'Find File', action = ":lua Snacks.dashboard.pick('files')" },
+        { icon = ' ', key = 'g', desc = 'Find Text', action = ":lua Snacks.dashboard.pick('live_grep')" },
+        { icon = ' ', key = 'r', desc = 'Recent Files', action = ":lua Snacks.dashboard.pick('oldfiles')" },
         {
-          icon = ' ',
+          icon = ' ',
           key = 'c',
           desc = 'Config',
           action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.expand('$HOME/nixos-configs/nix/packages/neovim')})",
         },
         {
-          icon = ' ',
+          icon = ' ',
           key = 'n',
           desc = 'Nix Configs',
           action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.expand('$HOME/nixos-configs')})",
         },
-        { icon = ' ', key = 's', desc = 'Restore Session', section = 'session' },
-        { icon = ' ', key = 'q', desc = 'Quit', action = ':qa' },
+        { icon = ' ', key = 's', desc = 'Restore Session', section = 'session' },
+        { icon = ' ', key = 'q', desc = 'Quit', action = ':qa' },
       },
     },
     sections = {
       { section = 'header' },
       { section = 'keys', gap = 1, padding = 1 },
-      { pane = 2, icon = ' ', title = 'Recent Files', section = 'recent_files', indent = 2, padding = 1 },
-      -- TODO: enable this if we ever switch over to using the Lazy plugin loader
-      -- { pane = 2, title = "Sessions", section = "sessions", indent = 2, padding = 1},
-      { pane = 2, icon = ' ', title = 'Projects', section = 'projects', indent = 2, padding = 1 },
+      { pane = 2, icon = ' ', title = 'Recent Files', section = 'recent_files', indent = 2, padding = 1 },
+      { pane = 2, icon = ' ', title = 'Projects', section = 'projects', indent = 2, padding = 1 },
       {
         pane = 2,
-        icon = ' ',
+        icon = ' ',
         title = 'Git Status',
         section = 'terminal',
         enabled = function()
@@ -343,8 +271,6 @@ snacks.setup({
         ttl = 5 * 60,
         indent = 3,
       },
-      -- TODO: Enable this if we ever switch to Lazy plugin loader (which I want to look into)
-      -- { section = "startup" },
     },
   },
   picker = {
@@ -387,7 +313,16 @@ snacks.setup({
       })
     end,
   },
-})
+}
+
+-- Only enable image support in the full variant
+if vim.g.neovim_variant ~= 'light' then
+  snacks_config.image = {
+    enable = false,
+  }
+end
+
+snacks.setup(snacks_config)
 
 -- Show notification once per session when we first interact with nixos-configs
 vim.api.nvim_create_autocmd('CursorMoved', {
@@ -421,7 +356,6 @@ require('persisted').setup({
   autoload = true,
 })
 
-require('claudecode').setup()
 require('Comment').setup()
 require('stay-centered').setup()
 require('smart-splits')

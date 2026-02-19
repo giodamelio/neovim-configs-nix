@@ -27,9 +27,15 @@
       # Custom vim plugins
       vimPlugins = import ./plugins.nix {inherit pkgs;};
     in {
-      default = import ./package.nix {
+      # Full variant (default)
+      default = import ./variants/full.nix {
         inherit pkgs vimPlugins;
         unison-lang = unisonPkgs;
+      };
+
+      # Light variant — smaller closure for servers / minimal use
+      light = import ./variants/light.nix {
+        inherit pkgs vimPlugins;
       };
 
       # Export vim plugins namespaced like nixpkgs

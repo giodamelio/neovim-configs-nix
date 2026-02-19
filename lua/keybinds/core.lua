@@ -1,6 +1,5 @@
 local wk = require('which-key')
 
-local neotest = require('neotest')
 local smart_split = require('smart-splits')
 local snacks = require('snacks')
 
@@ -84,8 +83,6 @@ wk.add({
   { '<leader>fGf', snacks.picker.git_log_file, desc = 'Find Git log files' },
   { '<leader>fF', snacks.picker.smart, desc = 'Smart Finder' },
   { '<leader>fr', snacks.picker.resume, desc = 'Resume last search' },
-  -- TODO: enable this if we ever switch to using lazy plugin loader
-  -- { '<leader>fl', snacks.picker.lazy,            desc = 'Find plugin specs' },
 })
 
 -- Get around important files easily
@@ -121,60 +118,6 @@ wk.add({
   },
 })
 
--- Testing
-wk.add({
-  { '<leader>t', group = 'Testing' },
-  {
-    '<leader>tf',
-    function()
-      neotest.run.run(vim.fn.expand('%'))
-    end,
-    desc = 'Run tests in file',
-  },
-  {
-    '<leader>tp',
-    function()
-      neotest.output_panel.toggle()
-    end,
-    desc = 'Toggle output panel',
-  },
-  {
-    '<leader>ts',
-    function()
-      neotest.summary.toggle()
-    end,
-    desc = 'Toggle summary',
-  },
-  {
-    '<leader>tt',
-    function()
-      neotest.run.run()
-    end,
-    desc = 'Run nearest test',
-  },
-  {
-    '<leader>tw',
-    function()
-      neotest.watch.toggle(vim.fn.expand('%'))
-    end,
-    desc = 'Watch tests in file',
-  },
-  {
-    '<leader>ta',
-    function()
-      neotest.run.attach()
-    end,
-    desc = 'Attach to running test',
-  },
-  {
-    '<leader>tl',
-    function()
-      neotest.run.run_last()
-    end,
-    desc = 'Run last test',
-  },
-})
-
 -- Language Server
 wk.add({
   { 'K', vim.lsp.buf.hover, desc = 'Show hover docs' },
@@ -198,35 +141,6 @@ wk.add({
   { '<leader>oo', '<cmd>Other<cr>', desc = 'Open the the other file' },
   { '<leader>os', '<cmd>OtherSplit<cr>', desc = 'Open the the other file in a horizontal split' },
   { '<leader>ov', '<cmd>OtherVSplit<cr>', desc = 'Open the the other file in a vertical split' },
-})
-
--- Claude Code
-wk.add({
-  { '<leader>c', group = 'Claude Code' },
-})
-vim.keymap.set('n', '<leader>cc', '<cmd>ClaudeCode<cr>', { desc = 'Toggle Claude' })
-vim.keymap.set('n', '<leader>cf', '<cmd>ClaudeCodeFocus<cr>', { desc = 'Focus Claude' })
-vim.keymap.set('n', '<leader>cr', '<cmd>ClaudeCode --resume<cr>', { desc = 'Resume Claude' })
-vim.keymap.set('n', '<leader>cC', '<cmd>ClaudeCode --continue<cr>', { desc = 'Continue Claude' })
-vim.keymap.set('n', '<leader>cm', '<cmd>ClaudeCodeSelectModel<cr>', { desc = 'Select Claude model' })
-vim.keymap.set('n', '<leader>cb', '<cmd>ClaudeCodeAdd %<cr>', { desc = 'Add current buffer' })
-vim.keymap.set('n', '<leader>ca', '<cmd>ClaudeCodeDiffAccept<cr>', { desc = 'Accept diff' })
-vim.keymap.set('n', '<leader>cd', '<cmd>ClaudeCodeDiffDeny<cr>', { desc = 'Deny diff' })
-vim.keymap.set('v', '<leader>cs', '<cmd>ClaudeCodeSend<cr>', { desc = 'Send to Claude' })
--- Set Claude Code tree add keymap only for file browser filetypes
-vim.api.nvim_create_autocmd('FileType', {
-  pattern = { 'NvimTree', 'neo-tree', 'oil', 'minifiles' },
-  callback = function()
-    vim.keymap.set('n', '<leader>cs', '<cmd>ClaudeCodeTreeAdd<cr>', { desc = 'Add file', buffer = true })
-    vim.keymap.set('n', '<leader>cS', function()
-      vim.cmd('ClaudeCodeTreeAdd')
-      vim.cmd('ClaudeCodeFocus')
-      -- Wait 100ms for focus to complete, then send enter
-      vim.defer_fn(function()
-        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<CR>', true, false, true), 'n', false)
-      end, 100)
-    end, { desc = 'Add file and send', buffer = true })
-  end,
 })
 
 -- Git keybindings
