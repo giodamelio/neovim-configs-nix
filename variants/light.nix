@@ -104,10 +104,23 @@ in
       ../lua/basic.lua
       ../lua/lsp.lua
       ../lua/treesitter.lua
-      ../lua/plugins/core.lua
+      ../lua/plugins/mini.lua
+      ../lua/plugins/luasnip.lua
+      ../lua/plugins/trouble.lua
+      ../lua/plugins/snacks.lua
+      ../lua/plugins/lualine.lua
+      ../lua/plugins/rainbow-delimiters.lua
+      ../lua/plugins/git.lua
+      ../lua/plugins/oil.lua
+      ../lua/plugins/other.lua
+      ../lua/plugins/smart-splits.lua
+      ../lua/plugins/grapple.lua
+      ../lua/plugins/persisted.lua
+      ../lua/plugins/comment.lua
+      ../lua/plugins/stay-centered.lua
       ../lua/plugins/elixir.lua
-      ../lua/commands.lua
-      ../lua/keybinds/core.lua
+      ../lua/plugins/treefmt.lua
+      ../lua/plugins/misc.lua
       ../lua/neovide.lua
     ];
   }

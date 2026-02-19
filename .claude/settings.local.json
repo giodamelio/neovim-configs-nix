@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "WebFetch(domain:raw.githubusercontent.com)",
-      "Bash(nix fmt:*)"
+      "Bash(nix fmt:*)",
+      "Bash(nix build:*)"
     ]
   }
 }

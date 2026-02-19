@@ -173,6 +173,12 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 	end,
 })
 
+-- LSP keybindings (pure vim.lsp, no plugin dependency)
+vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Show hover docs" })
+vim.keymap.set("n", "<leader>ll", vim.lsp.buf.code_action, { desc = "Show code actions" })
+vim.keymap.set("n", "<leader>lf", vim.lsp.buf.format, { desc = "Format buffer" })
+vim.keymap.set("n", "<leader>lR", vim.lsp.buf.rename, { desc = "Rename under cursor" })
+
 -- -- Setup some language servers
 -- -- Config stolen from lsp-zero.nvim, makes Lua work good with Neovim
 -- -- See: https://github.com/VonHeikemen/lsp-zero.nvim/blob/dev-v3/lua/lsp-zero/server.lua#L203-L233
