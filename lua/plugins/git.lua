@@ -1,73 +1,140 @@
--- Git: gitsigns + gitlinker + neogit
-local gs = require("gitsigns")
-local gsa = require("gitsigns.actions")
-local gl = require("gitlinker")
-local neogit = require("neogit")
-local snacks = require("snacks")
-local wk = require("which-key")
+-- Git: gitsigns + gitlinker + neogit + diffview
+local nix = require("lib.nix")
 
-gs.setup({
-	current_line_blame = true,
-})
-
-gl.setup({
-	mapping = nil,
-})
-
-neogit.setup()
-
--- Git keybindings
-wk.add({
-	{ "<leader>g", group = "Git" },
-})
-
-vim.keymap.set("n", "<leader>gg", "<cmd>Neogit<cr>", { desc = "Open Neogit UI" })
-vim.keymap.set("n", "<leader>gb", function()
-	snacks.git.blame_line()
-end, { desc = "Blame Current Line" })
-vim.keymap.set("n", "<leader>gn", function()
-	gsa.next_hunk()
-end, { desc = "Go to next hunk" })
-vim.keymap.set("n", "<leader>gp", function()
-	gsa.prev_hunk()
-end, { desc = "Go to previous hunk" })
-vim.keymap.set("n", "<leader>gr", function()
-	gs.reset_hunk()
-end, { desc = "Reset hunk" })
-vim.keymap.set("n", "<leader>gs", function()
-	gs.stage_hunk()
-end, { desc = "Stage hunk" })
-vim.keymap.set("n", "<leader>gu", function()
-	gs.undo_stage_hunk()
-end, { desc = "Unstage hunk" })
-vim.keymap.set("n", "<leader>go", function()
-	snacks.gitbrowse()
-end, { desc = "Open current file in browser" })
-vim.keymap.set("n", "<leader>gy", function()
-	gl.link({
-		-- GitLinker hard codes to the + register which doesn't work over ssh
-		action = function(url)
-			vim.fn.setreg('"', url)
+return {
+	-- Gitsigns: show git changes in sign column
+	nix.spec("gitsigns.nvim", {
+		event = "BufReadPost",
+		dependencies = { "which-key.nvim", "snacks.nvim" },
+		opts = {
+			current_line_blame = true,
+		},
+		keys = {
+			{
+				"<leader>gb",
+				function()
+					require("snacks").git.blame_line()
+				end,
+				desc = "Blame Current Line",
+			},
+			{
+				"<leader>gn",
+				function()
+					require("gitsigns.actions").next_hunk()
+				end,
+				desc = "Go to next hunk",
+			},
+			{
+				"<leader>gp",
+				function()
+					require("gitsigns.actions").prev_hunk()
+				end,
+				desc = "Go to previous hunk",
+			},
+			{
+				"<leader>gr",
+				function()
+					require("gitsigns").reset_hunk()
+				end,
+				desc = "Reset hunk",
+			},
+			{
+				"<leader>gs",
+				function()
+					require("gitsigns").stage_hunk()
+				end,
+				desc = "Stage hunk",
+			},
+			{
+				"<leader>gu",
+				function()
+					require("gitsigns").undo_stage_hunk()
+				end,
+				desc = "Unstage hunk",
+			},
+			{
+				"<leader>go",
+				function()
+					require("snacks").gitbrowse()
+				end,
+				desc = "Open current file in browser",
+			},
+			{
+				"<leader>gy",
+				function()
+					require("gitlinker").link({
+						-- GitLinker hard codes to the + register which doesn't work over ssh
+						action = function(url)
+							vim.fn.setreg('"', url)
+						end,
+						lstart = vim.api.nvim_buf_get_mark(0, "<")[1],
+						lend = vim.api.nvim_buf_get_mark(0, ">")[1],
+					})
+				end,
+				desc = "Copy permalink to clipboard",
+			},
+			-- Visual mode bindings
+			{
+				"<leader>gr",
+				function()
+					require("gitsigns").reset_hunk({ vim.fn.line("."), vim.fn.line("v") })
+				end,
+				mode = "v",
+				desc = "Reset hunk",
+			},
+			{
+				"<leader>gs",
+				function()
+					require("gitsigns").stage_hunk({ vim.fn.line("."), vim.fn.line("v") })
+				end,
+				mode = "v",
+				desc = "Stage hunk",
+			},
+			{
+				"<leader>gy",
+				function()
+					require("gitlinker").link({
+						-- GitLinker hard codes to the + register which doesn't work over ssh
+						action = function(url)
+							vim.fn.setreg('"', url)
+						end,
+						lstart = vim.api.nvim_buf_get_mark(0, "<")[1],
+						lend = vim.api.nvim_buf_get_mark(0, ">")[1],
+					})
+				end,
+				mode = "v",
+				desc = "Copy permalink to clipboard",
+			},
+		},
+		config = function(_, opts)
+			require("gitsigns").setup(opts)
+			require("which-key").add({
+				{ "<leader>g", group = "Git" },
+			})
 		end,
-		lstart = vim.api.nvim_buf_get_mark(0, "<")[1],
-		lend = vim.api.nvim_buf_get_mark(0, ">")[1],
-	})
-end, { desc = "Copy permalink to clipboard" })
+	}),
 
--- Visual mode git bindings
-vim.keymap.set("v", "<leader>gr", function()
-	gs.reset_hunk({ vim.fn.line("."), vim.fn.line("v") })
-end, { desc = "Reset hunk" })
-vim.keymap.set("v", "<leader>gs", function()
-	gs.stage_hunk({ vim.fn.line("."), vim.fn.line("v") })
-end, { desc = "Stage hunk" })
-vim.keymap.set("v", "<leader>gy", function()
-	gl.link({
-		-- GitLinker hard codes to the + register which doesn't work over ssh
-		action = function(url)
-			vim.fn.setreg('"', url)
-		end,
-		lstart = vim.api.nvim_buf_get_mark(0, "<")[1],
-		lend = vim.api.nvim_buf_get_mark(0, ">")[1],
-	})
-end, { desc = "Copy permalink to clipboard" })
+	-- GitLinker: generate permalinks
+	nix.spec("gitlinker.nvim", {
+		event = "BufReadPost",
+		opts = {
+			mapping = nil,
+		},
+	}),
+
+	-- Neogit: magit-like git interface
+	nix.spec("neogit", {
+		cmd = "Neogit",
+		dependencies = { "plenary.nvim", "diffview.nvim" },
+		keys = {
+			{ "<leader>gg", "<cmd>Neogit<cr>", desc = "Open Neogit UI" },
+		},
+		config = true,
+	}),
+
+	-- Diffview: diff viewer for neogit
+	nix.spec("diffview.nvim", {
+		lazy = true,
+		config = true,
+	}),
+}

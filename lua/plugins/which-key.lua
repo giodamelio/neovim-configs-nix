@@ -1,11 +1,7 @@
 local nix = require("lib.nix")
 
 return {
-	nix.spec("mini.icons", {
-		lazy = true,
-		config = true,
-	}),
-	nix.spec("mini.ai", {
+	nix.spec("which-key.nvim", {
 		event = "VeryLazy",
 		config = true,
 	}),

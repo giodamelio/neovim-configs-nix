@@ -1,4 +1,6 @@
--- Treefmt: format files with treefmt
+-- Treefmt: format files with treefmt (pure Lua commands, no plugin)
+-- This runs at load time, not through a lazy.nvim spec
+
 if vim.fn.executable("treefmt") == 1 then
 	vim.api.nvim_create_user_command("Treefmt", function(opts)
 		local snacks = require("snacks")
@@ -54,3 +56,6 @@ end
 
 -- Local leader keybinding for formatting current file with treefmt
 vim.keymap.set("n", "<localleader>f", "<cmd>Treefmt<cr>", { desc = "Format current file with treefmt" })
+
+-- Return empty table so lazy.nvim doesn't complain
+return {}

@@ -11,10 +11,7 @@ in
 
     plugins = with pkgs.vimPlugins; [
       # Colorscheme
-      {
-        plugin = tokyonight-nvim;
-        config = "colorscheme tokyonight";
-      }
+      tokyonight-nvim
 
       # Icons
       nvim-web-devicons
@@ -45,13 +42,16 @@ in
       nvim-navic
 
       # AST for hightlighting, formatting, etc
-      (nvim-treesitter.withPlugins (
-        _:
-          nvim-treesitter.allGrammars
-          ++ [
-            unison-lang.tree-sitter-grammar
-          ]
-      ))
+      {
+        plugin = nvim-treesitter.withPlugins (
+          _:
+            nvim-treesitter.allGrammars
+            ++ [
+              unison-lang.tree-sitter-grammar
+            ]
+        );
+        name = "nvim-treesitter";
+      }
       rainbow-delimiters-nvim # Rainbow parens
       nvim-treesitter-parsers.hurl
 
@@ -106,34 +106,9 @@ in
       pkgs.netcat-gnu # For Unison LSP
     ];
 
+    luaDir = ../lua;
+
     extraConfig = ''
       let g:neovim_variant = 'full'
     '';
-
-    luaModules = [
-      ../lua/basic.lua
-      ../lua/lsp.lua
-      ../lua/lsp-extra.lua
-      ../lua/treesitter.lua
-      ../lua/plugins/mini.lua
-      ../lua/plugins/luasnip.lua
-      ../lua/plugins/trouble.lua
-      ../lua/plugins/snacks.lua
-      ../lua/plugins/lualine.lua
-      ../lua/plugins/rainbow-delimiters.lua
-      ../lua/plugins/git.lua
-      ../lua/plugins/oil.lua
-      ../lua/plugins/other.lua
-      ../lua/plugins/smart-splits.lua
-      ../lua/plugins/grapple.lua
-      ../lua/plugins/persisted.lua
-      ../lua/plugins/comment.lua
-      ../lua/plugins/stay-centered.lua
-      ../lua/plugins/neotest.lua
-      ../lua/plugins/elixir.lua
-      ../lua/plugins/claude.lua
-      ../lua/plugins/treefmt.lua
-      ../lua/plugins/misc.lua
-      ../lua/neovide.lua
-    ];
   }

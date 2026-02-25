@@ -1,4 +1,11 @@
 -- Oil file explorer
-require("oil").setup({
-	columns = { "icon", "permissions", "size" },
-})
+local nix = require("lib.nix")
+
+return {
+	nix.spec("oil.nvim", {
+		cmd = "Oil",
+		opts = {
+			columns = { "icon", "permissions", "size" },
+		},
+	}),
+}

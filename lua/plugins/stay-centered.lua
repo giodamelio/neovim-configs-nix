@@ -1,2 +1,9 @@
 -- Keep cursor centered
-require("stay-centered").setup()
+local nix = require("lib.nix")
+
+return {
+	nix.spec("stay-centered.nvim", {
+		event = "BufReadPost",
+		config = true,
+	}),
+}

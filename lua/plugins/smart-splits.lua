@@ -1,21 +1,110 @@
 -- Smart splits: pane navigation, resizing, and buffer swapping
-local smart_split = require("smart-splits")
+local nix = require("lib.nix")
 
--- Pane resize
-vim.keymap.set("n", "<A-h>", smart_split.resize_left)
-vim.keymap.set("n", "<A-j>", smart_split.resize_down)
-vim.keymap.set("n", "<A-k>", smart_split.resize_up)
-vim.keymap.set("n", "<A-l>", smart_split.resize_right)
+return {
+	nix.spec("smart-splits.nvim", {
+		event = "VeryLazy",
+		keys = {
+			-- Pane resize
+			{
+				"<A-h>",
+				function()
+					require("smart-splits").resize_left()
+				end,
+				desc = "Resize left",
+			},
+			{
+				"<A-j>",
+				function()
+					require("smart-splits").resize_down()
+				end,
+				desc = "Resize down",
+			},
+			{
+				"<A-k>",
+				function()
+					require("smart-splits").resize_up()
+				end,
+				desc = "Resize up",
+			},
+			{
+				"<A-l>",
+				function()
+					require("smart-splits").resize_right()
+				end,
+				desc = "Resize right",
+			},
 
--- Moving between splits
-vim.keymap.set({ "n", "t", "v" }, "<C-h>", smart_split.move_cursor_left)
-vim.keymap.set({ "n", "t", "v" }, "<C-j>", smart_split.move_cursor_down)
-vim.keymap.set({ "n", "t", "v" }, "<C-k>", smart_split.move_cursor_up)
-vim.keymap.set({ "n", "t", "v" }, "<C-l>", smart_split.move_cursor_right)
-vim.keymap.set("n", "<C-\\>", smart_split.move_cursor_previous)
+			-- Moving between splits
+			{
+				"<C-h>",
+				function()
+					require("smart-splits").move_cursor_left()
+				end,
+				mode = { "n", "t", "v" },
+				desc = "Move cursor left",
+			},
+			{
+				"<C-j>",
+				function()
+					require("smart-splits").move_cursor_down()
+				end,
+				mode = { "n", "t", "v" },
+				desc = "Move cursor down",
+			},
+			{
+				"<C-k>",
+				function()
+					require("smart-splits").move_cursor_up()
+				end,
+				mode = { "n", "t", "v" },
+				desc = "Move cursor up",
+			},
+			{
+				"<C-l>",
+				function()
+					require("smart-splits").move_cursor_right()
+				end,
+				mode = { "n", "t", "v" },
+				desc = "Move cursor right",
+			},
+			{
+				"<C-\\>",
+				function()
+					require("smart-splits").move_cursor_previous()
+				end,
+				desc = "Move cursor previous",
+			},
 
--- Swapping buffers between windows
-vim.keymap.set("n", "<leader><leader>h", smart_split.swap_buf_left)
-vim.keymap.set("n", "<leader><leader>j", smart_split.swap_buf_down)
-vim.keymap.set("n", "<leader><leader>k", smart_split.swap_buf_up)
-vim.keymap.set("n", "<leader><leader>l", smart_split.swap_buf_right)
+			-- Swapping buffers between windows
+			{
+				"<leader><leader>h",
+				function()
+					require("smart-splits").swap_buf_left()
+				end,
+				desc = "Swap buffer left",
+			},
+			{
+				"<leader><leader>j",
+				function()
+					require("smart-splits").swap_buf_down()
+				end,
+				desc = "Swap buffer down",
+			},
+			{
+				"<leader><leader>k",
+				function()
+					require("smart-splits").swap_buf_up()
+				end,
+				desc = "Swap buffer up",
+			},
+			{
+				"<leader><leader>l",
+				function()
+					require("smart-splits").swap_buf_right()
+				end,
+				desc = "Swap buffer right",
+			},
+		},
+	}),
+}

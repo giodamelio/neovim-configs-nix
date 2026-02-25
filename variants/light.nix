@@ -10,10 +10,7 @@ in
 
     plugins = with pkgs.vimPlugins; [
       # Colorscheme
-      {
-        plugin = tokyonight-nvim;
-        config = "colorscheme tokyonight";
-      }
+      tokyonight-nvim
 
       # Icons
       nvim-web-devicons
@@ -43,29 +40,32 @@ in
       nvim-navic
 
       # AST — only common grammars
-      (nvim-treesitter.withPlugins (p: [
-        p.lua
-        p.nix
-        p.python
-        p.rust
-        p.go
-        p.javascript
-        p.typescript
-        p.json
-        p.yaml
-        p.toml
-        p.bash
-        p.html
-        p.css
-        p.markdown
-        p.markdown_inline
-        p.vim
-        p.vimdoc
-        p.elixir
-        p.heex
-        p.eex
-        p.erlang
-      ]))
+      {
+        plugin = nvim-treesitter.withPlugins (p: [
+          p.lua
+          p.nix
+          p.python
+          p.rust
+          p.go
+          p.javascript
+          p.typescript
+          p.json
+          p.yaml
+          p.toml
+          p.bash
+          p.html
+          p.css
+          p.markdown
+          p.markdown_inline
+          p.vim
+          p.vimdoc
+          p.elixir
+          p.heex
+          p.eex
+          p.erlang
+        ]);
+        name = "nvim-treesitter";
+      }
       rainbow-delimiters-nvim
 
       # Status bar
@@ -94,30 +94,8 @@ in
       pkgs.fd
     ];
 
+    luaDir = ../lua;
     extraConfig = ''
       let g:neovim_variant = 'light'
     '';
-
-    luaModules = [
-      ../lua/basic.lua
-      ../lua/lsp.lua
-      ../lua/treesitter.lua
-      ../lua/plugins/mini.lua
-      ../lua/plugins/luasnip.lua
-      ../lua/plugins/trouble.lua
-      ../lua/plugins/snacks.lua
-      ../lua/plugins/lualine.lua
-      ../lua/plugins/rainbow-delimiters.lua
-      ../lua/plugins/oil.lua
-      ../lua/plugins/other.lua
-      ../lua/plugins/smart-splits.lua
-      ../lua/plugins/grapple.lua
-      ../lua/plugins/persisted.lua
-      ../lua/plugins/comment.lua
-      ../lua/plugins/stay-centered.lua
-      ../lua/plugins/elixir.lua
-      ../lua/plugins/treefmt.lua
-      ../lua/plugins/misc.lua
-      ../lua/neovide.lua
-    ];
   }

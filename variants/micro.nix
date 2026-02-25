@@ -1,6 +1,6 @@
 # Micro Neovim variant — smallest config with just basic editing + fuzzy finding.
 {pkgs}: let
-  mkNeovim = import ../mkNeovim.nix;
+  mkNeovim = import ../mkNeovimLegacy.nix;
 in
   mkNeovim {
     inherit pkgs;
@@ -31,6 +31,6 @@ in
 
     luaModules = [
       ../lua/basic.lua
-      ../lua/plugins/micro.lua
+      ../lua/micro.lua
     ];
   }
