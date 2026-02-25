@@ -100,6 +100,9 @@ in
     ];
 
     runtimeDeps = [
+      pkgs.ripgrep
+      pkgs.fd
+      pkgs.git
       pkgs.imagemagick # Snacks: For inline images
       pkgs.netcat-gnu # For Unison LSP
     ];
