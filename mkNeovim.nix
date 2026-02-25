@@ -8,7 +8,7 @@
   extraConfig ? "",
   withPython3 ? false,
 }: let
-  nvimConfig = pkgs.neovimUtils.makeNeovimConfig {
+  baseConfig = pkgs.neovimUtils.makeNeovimConfig {
     inherit withPython3;
     withRuby = false;
     vimAlias = true;
@@ -20,16 +20,11 @@
       extraConfig
       + builtins.concatStringsSep "\n" (map (f: "luafile ${f}") luaModules);
   };
+
+  nvimConfig =
+    baseConfig
+    // pkgs.lib.optionalAttrs (runtimeDeps != []) {
+      wrapperArgs = baseConfig.wrapperArgs ++ ["--suffix" "PATH" ":" (pkgs.lib.makeBinPath runtimeDeps)];
+    };
 in
-  if runtimeDeps == []
-  then pkgs.wrapNeovimUnstable pkgs.neovim-unwrapped nvimConfig
-  else
-    pkgs.symlinkJoin {
-      name = "nvim";
-      meta.mainProgram = "nvim";
-      paths =
-        [
-          (pkgs.wrapNeovimUnstable pkgs.neovim-unwrapped nvimConfig)
-        ]
-        ++ runtimeDeps;
-    }
+  pkgs.wrapNeovimUnstable pkgs.neovim-unwrapped nvimConfig
