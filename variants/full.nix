@@ -49,7 +49,6 @@ in
         _:
           nvim-treesitter.allGrammars
           ++ [
-            vimPlugins.tree-sitter-surrealdb
             unison-lang.tree-sitter-grammar
           ]
       ))

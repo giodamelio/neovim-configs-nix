@@ -32,7 +32,7 @@ Always run `nix fmt` after making edits to format the codebase with treefmt.
 **Nix layer** (`flake.nix` → `mkNeovim.nix` → `plugins.nix`):
 - `flake.nix`: Entry point. Imports nixpkgs unstable + unison-lang flake. Exports 3 variants (full, light, micro) + custom vim plugins.
 - `mkNeovim.nix`: Shared builder function. Takes a plugin list and `luaModules` list, generates `customRC` with ordered `luafile` commands, wraps with runtime dependencies.
-- `plugins.nix`: Defines 4 custom plugins not in nixpkgs (gitlinker-nvim, stay-centered-nvim, tree-sitter-surrealdb, vim-mint).
+- `plugins.nix`: Defines 3 custom plugins not in nixpkgs (gitlinker-nvim, stay-centered-nvim, vim-mint).
 - `variants/full.nix`: All plugins, all LSP servers, all treesitter grammars.
 - `variants/light.nix`: Core plugins only, minimal closure size. No neotest, claude, or extra LSP servers.
 - `variants/micro.nix`: Smallest config — just basic editing + fuzzy finding via snacks.
@@ -43,7 +43,7 @@ Always run `nix fmt` after making edits to format the codebase with treefmt.
 - `basic.lua`: Core vim options (leader=space, 2-space tabs, relative numbers, clipboard). Must load first.
 - `lsp.lua`: blink.cmp completion setup + 12 language server configs + auto-format on save + pure vim.lsp keybinds (`K`, `<leader>ll`, `<leader>lf`, `<leader>lR`).
 - `lsp-extra.lua`: Niche LSP servers (haskell, unison, sourcekit). Full variant only.
-- `treesitter.lua`: Treesitter highlighting/indentation + custom SurrealDB grammar.
+- `treesitter.lua`: Treesitter highlighting/indentation via built-in vim.treesitter API.
 - `neovide.lua`: GUI-specific settings (cursor, scrolling, zoom). Loads last.
 
 **Plugin modules** (`lua/plugins/`):

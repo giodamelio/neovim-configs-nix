@@ -52,9 +52,6 @@
       "vimPlugins.gitlinker-nvim" = vimPlugins.gitlinker-nvim;
       "vimPlugins.stay-centered-nvim" = vimPlugins.stay-centered-nvim;
       "vimPlugins.vim-mint" = vimPlugins.vim-mint;
-
-      # Also export the treesitter grammar
-      "treeSitterPlugins.tree-sitter-surrealdb" = vimPlugins.tree-sitter-surrealdb;
     });
 
     formatter = forAllSystems (system: let

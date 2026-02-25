@@ -23,18 +23,6 @@
     meta.homepage = "https://github.com/arnamak/stay-centered.nvim";
   };
 
-  tree-sitter-surrealdb = pkgs.tree-sitter.buildGrammar {
-    language = "surrealdb";
-    version = "2025-09-24";
-    src = pkgs.fetchFromGitHub {
-      owner = "DariusCorvus";
-      repo = "tree-sitter-surrealdb";
-      # Latest on branch main as of 2025-09-24
-      rev = "17a7ed4481bdaaa35a1372f3a94bc851d634a19e";
-      hash = "sha256-/xX5lEQKFuLQl6YxUA2WLKGX5P2GBugtYj42WCtA0xU=";
-    };
-  };
-
   vim-mint = pkgs.vimUtils.buildVimPlugin {
     pname = "vim-mint";
     version = "2025-11-10";
