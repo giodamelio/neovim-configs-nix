@@ -3,7 +3,9 @@
     "allow": [
       "WebFetch(domain:raw.githubusercontent.com)",
       "Bash(nix fmt:*)",
-      "Bash(nix build:*)"
+      "Bash(nix build:*)",
+      "WebSearch",
+      "WebFetch(domain:github.com)"
     ]
   }
 }
