@@ -4,8 +4,8 @@ local mini_icons = require("mini.icons")
 
 ---- Setup Completion ----
 
--- Load some additional providers
-require("blink-cmp-git")
+-- Load some additional providers (optional, not present in all variants)
+local has_blink_cmp_git = pcall(require, "blink-cmp-git")
 
 -- Main setup
 blink.setup({
@@ -67,7 +67,8 @@ blink.setup({
 	},
 
 	sources = {
-		default = { "lsp", "path", "snippets", "buffer", "git" },
+		default = has_blink_cmp_git and { "lsp", "path", "snippets", "buffer", "git" }
+			or { "lsp", "path", "snippets", "buffer" },
 		providers = {
 			lsp = {
 				score_offset = 1,
@@ -82,14 +83,16 @@ blink.setup({
 			path = {
 				score_offset = 4,
 			},
-			git = {
-				module = "blink-cmp-git",
-				name = "Git",
-				opts = {},
-				-- This should ALWAYS go last
-				score_offset = -10000,
-				min_keyword_length = 4,
-			},
+			git = has_blink_cmp_git
+					and {
+						module = "blink-cmp-git",
+						name = "Git",
+						opts = {},
+						-- This should ALWAYS go last
+						score_offset = -10000,
+						min_keyword_length = 4,
+					}
+				or nil,
 		},
 	},
 

@@ -34,7 +34,6 @@ in
 
       # Autocomplete
       blink-cmp
-      blink-cmp-git
 
       # Snippets
       luasnip
@@ -73,12 +72,6 @@ in
       lualine-nvim
       lualine-lsp-progress
 
-      # Git stuff
-      gitsigns-nvim
-      vimPlugins.gitlinker-nvim
-      neogit
-      diffview-nvim
-
       oil-nvim
       comment-nvim
       marks-nvim
@@ -96,6 +89,11 @@ in
       grapple-nvim
     ];
 
+    runtimeDeps = [
+      pkgs.ripgrep
+      pkgs.fd
+    ];
+
     extraConfig = ''
       let g:neovim_variant = 'light'
     '';
@@ -110,7 +108,6 @@ in
       ../lua/plugins/snacks.lua
       ../lua/plugins/lualine.lua
       ../lua/plugins/rainbow-delimiters.lua
-      ../lua/plugins/git.lua
       ../lua/plugins/oil.lua
       ../lua/plugins/other.lua
       ../lua/plugins/smart-splits.lua
