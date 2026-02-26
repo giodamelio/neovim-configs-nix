@@ -16,6 +16,19 @@
   extractPlugin = p:
     p.plugin or p;
 
+  # Extract treesitter grammar dependencies from nvim-treesitter
+  # These parser .so files must be on the rtp for vim.treesitter.start() to find them
+  # Other plugin dependencies are handled by lazy.nvim
+  treesitterDeps = let
+    tsPlugin = pkgs.lib.findFirst
+      (p: (getPluginName p) == "nvim-treesitter")
+      null
+      plugins;
+  in
+    if tsPlugin != null
+    then (extractPlugin tsPlugin).dependencies or []
+    else [];
+
   # Get the name for a plugin entry (supports name override)
   # Check for attrset with explicit override first, since derivations have a 'name' attribute
   # Fall back to 'name' if 'pname' is missing (some external plugins don't have pname)
@@ -56,8 +69,9 @@
     vimAlias = true;
     viAlias = true;
 
-    # Only lazy.nvim is bundled via Nix — it manages all other plugins
-    plugins = [pkgs.vimPlugins.lazy-nvim];
+    # lazy.nvim manages all plugins; treesitter grammars are bundled directly
+    # so their parser/*.so files are on the rtp for vim.treesitter.start()
+    plugins = [pkgs.vimPlugins.lazy-nvim] ++ treesitterDeps;
 
     customRC =
       extraConfig
