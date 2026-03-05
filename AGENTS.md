@@ -167,19 +167,52 @@ Common pname patterns (check with `nix eval` if unsure):
 
 Plugins only in certain variants (e.g., `claudecode.nvim` in full only) automatically get disabled in other variants. The `nix.spec()` helper returns an empty table when the plugin isn't in `vim.g.nix_plugins`, which lazy.nvim ignores.
 
-### Custom Plugins
+### Custom Plugins (GitHub)
 
-If a plugin isn't in nixpkgs, add a derivation to `plugins.nix`:
+For plugins not in nixpkgs, use `nurl` to generate the fetch expression:
 
-```nix
-my-plugin-nvim = pkgs.vimUtils.buildVimPlugin {
-  pname = "my-plugin.nvim";  # This becomes the Lua lookup key
-  version = "...";
-  src = pkgs.fetchFromGitHub { ... };
-};
+```bash
+nurl https://github.com/owner/repo.nvim
 ```
 
-Then reference it in variants as `vimPlugins.my-plugin-nvim`.
+Then update these 4 files:
+
+1. **`plugins.nix`** - Add the plugin definition:
+   ```nix
+   plugin-name = pkgs.vimUtils.buildVimPlugin {
+     pname = "plugin.nvim";
+     version = "YYYY-MM-DD";
+     src = pkgs.fetchFromGitHub {
+       owner = "owner";
+       repo = "plugin.nvim";
+       rev = "...";
+       hash = "sha256-...";
+     };
+     meta.homepage = "https://github.com/owner/plugin.nvim";
+   };
+   ```
+
+2. **`variants/full.nix`** (or other variant) - Add to plugins list:
+   ```nix
+   vimPlugins.plugin-name
+   ```
+
+3. **`lua/plugins/<name>.lua`** - Create config file:
+   ```lua
+   local nix = require("lib.nix")
+   return {
+     nix.spec("plugin.nvim", {
+       config = true,  -- if plugin needs setup(), check plugin docs
+     }),
+   }
+   ```
+
+4. **`flake.nix`** - Export the plugin:
+   ```nix
+   "vimPlugins.plugin-name" = vimPlugins.plugin-name;
+   ```
+
+Naming: attribute names use hyphens (`jj-nvim`), pname matches repo (`jj.nvim`).
 
 ## Conventions
 
