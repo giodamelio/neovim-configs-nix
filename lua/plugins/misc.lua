@@ -83,7 +83,7 @@ return {
 
 	-- Unix shell commands in Vim
 	nix.spec("vim-eunuch", {
-		cmd = { "Delete", "Move", "Rename", "Mkdir", "Chmod", "SudoEdit", "SudoWrite" },
+		event = "VeryLazy",
 	}),
 
 	-- Startup time profiler
