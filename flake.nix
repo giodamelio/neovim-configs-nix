@@ -65,7 +65,11 @@
       treefmtEval = treefmt-nix.lib.evalModule pkgs ./treefmt.nix;
     in {
       default = pkgs.mkShell {
-        packages = [treefmtEval.config.build.wrapper];
+        packages = with pkgs; [
+          nix-init
+          nurl
+          treefmtEval.config.build.wrapper
+        ];
       };
     });
   };
