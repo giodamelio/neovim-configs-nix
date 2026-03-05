@@ -96,6 +96,7 @@ in
       unison-lang.vim-unison
       grapple-nvim
       vim-ormolu
+      vimPlugins.jj-nvim
     ];
 
     runtimeDeps = [

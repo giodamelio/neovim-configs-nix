@@ -35,4 +35,16 @@
     };
     meta.homepage = "https://github.com/IrenejMarc/vim-mint";
   };
+
+  jj-nvim = pkgs.vimUtils.buildVimPlugin {
+    pname = "jj.nvim";
+    version = "2025-03-04";
+    src = pkgs.fetchFromGitHub {
+      owner = "NicolasGB";
+      repo = "jj.nvim";
+      rev = "bbba4051c862473637e98277f284d12b050588ca";
+      hash = "sha256-nokftWcAmmHX6UcH6O79xkLwbUpq1W8N9lf1e+NyGqE=";
+    };
+    meta.homepage = "https://github.com/NicolasGB/jj.nvim";
+  };
 }

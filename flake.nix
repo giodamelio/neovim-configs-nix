@@ -52,6 +52,7 @@
       "vimPlugins.gitlinker-nvim" = vimPlugins.gitlinker-nvim;
       "vimPlugins.stay-centered-nvim" = vimPlugins.stay-centered-nvim;
       "vimPlugins.vim-mint" = vimPlugins.vim-mint;
+      "vimPlugins.jj-nvim" = vimPlugins.jj-nvim;
     });
 
     formatter = forAllSystems (system: let
