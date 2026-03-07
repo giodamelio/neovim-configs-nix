@@ -5,3 +5,5 @@
 - [ ] Expand and Shrink key bindings on the AST level via treesitter. /vs_codelike_expand_selection_via_treesitter
 
 - [ ] Telescope AST search. https://github.com/ray-x/telescope-ast-grep.nvim
+
+- [ ] Try out NVF again. Maybe it's lazy loading would work fine.
