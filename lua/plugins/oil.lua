@@ -3,7 +3,7 @@ local nix = require("lib.nix")
 
 return {
 	nix.spec("oil.nvim", {
-		cmd = "Oil",
+		lazy = false,
 		opts = {
 			columns = { "icon", "permissions", "size" },
 		},
