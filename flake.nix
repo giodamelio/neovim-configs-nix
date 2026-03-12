@@ -30,38 +30,157 @@
   }: let
     supportedSystems = ["x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin"];
     forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
+
+    # Helper to create NVF variants
+    mkVariant = {
+      system,
+      modules,
+      extraSpecialArgs ? {},
+    }:
+      nvf.lib.neovimConfiguration {
+        pkgs = import nixpkgs {
+          inherit system;
+          config.allowUnfree = true;
+        };
+        inherit modules;
+        extraSpecialArgs =
+          {
+            inherit system;
+            unisonPkgs = unison-lang.packages.${system};
+            vimPlugins = import ./plugins.nix {
+              pkgs = import nixpkgs {
+                inherit system;
+                config.allowUnfree = true;
+              };
+            };
+          }
+          // extraSpecialArgs;
+      };
   in {
+    # Packages - self-contained Neovim binaries
     packages = forAllSystems (system: let
       pkgs = import nixpkgs {
         inherit system;
         config.allowUnfree = true;
       };
-      unisonPkgs = unison-lang.packages.${system};
 
       # Custom vim plugins
       vimPlugins = import ./plugins.nix {inherit pkgs;};
+
+      full = mkVariant {
+        inherit system;
+        modules = [./nvf/base.nix ./nvf/full.nix];
+        extraSpecialArgs.variant = "full";
+      };
+
+      light = mkVariant {
+        inherit system;
+        modules = [./nvf/base.nix ./nvf/light.nix];
+        extraSpecialArgs.variant = "light";
+      };
+
+      micro = mkVariant {
+        inherit system;
+        modules = [./nvf/base.nix ./nvf/micro.nix];
+        extraSpecialArgs.variant = "micro";
+      };
     in {
       # Full variant (default)
-      default = import ./variants/full.nix {
-        inherit pkgs vimPlugins;
-        unison-lang = unisonPkgs;
-      };
+      default = full.neovim;
 
-      # Light variant — smaller closure for servers / minimal use
-      light = import ./variants/light.nix {
-        inherit pkgs vimPlugins;
-      };
+      # Light variant - smaller closure for servers / minimal use
+      light = light.neovim;
 
-      # Micro variant — smallest config with fuzzy finding only
-      micro = import ./variants/micro.nix {
-        inherit pkgs;
-      };
+      # Micro variant - smallest config with fuzzy finding only
+      micro = micro.neovim;
 
       # Export vim plugins namespaced like nixpkgs
       "vimPlugins.gitlinker-nvim" = vimPlugins.gitlinker-nvim;
       "vimPlugins.stay-centered-nvim" = vimPlugins.stay-centered-nvim;
       "vimPlugins.vim-mint" = vimPlugins.vim-mint;
       "vimPlugins.jj-nvim" = vimPlugins.jj-nvim;
+    });
+
+    # NVF Modules for reuse
+    nvfModules = {
+      base = ./nvf/base.nix;
+      plugins-builtin = ./nvf/plugins-builtin.nix;
+      plugins-custom = ./nvf/plugins-custom.nix;
+      keybindings = ./nvf/keybindings.nix;
+      languages = ./nvf/languages.nix;
+      full = ./nvf/full.nix;
+      light = ./nvf/light.nix;
+      micro = ./nvf/micro.nix;
+      neovide = ./nvf/neovide.nix;
+    };
+
+    # NixOS Modules
+    nixosModules = forAllSystems (system: let
+      full = mkVariant {
+        inherit system;
+        modules = [./nvf/base.nix ./nvf/full.nix];
+        extraSpecialArgs.variant = "full";
+      };
+      light = mkVariant {
+        inherit system;
+        modules = [./nvf/base.nix ./nvf/light.nix];
+        extraSpecialArgs.variant = "light";
+      };
+      micro = mkVariant {
+        inherit system;
+        modules = [./nvf/base.nix ./nvf/micro.nix];
+        extraSpecialArgs.variant = "micro";
+      };
+    in {
+      full = {environment.systemPackages = [full.neovim];};
+      light = {environment.systemPackages = [light.neovim];};
+      micro = {environment.systemPackages = [micro.neovim];};
+    });
+
+    # Home Manager Modules
+    homeManagerModules = forAllSystems (system: let
+      full = mkVariant {
+        inherit system;
+        modules = [./nvf/base.nix ./nvf/full.nix];
+        extraSpecialArgs.variant = "full";
+      };
+      light = mkVariant {
+        inherit system;
+        modules = [./nvf/base.nix ./nvf/light.nix];
+        extraSpecialArgs.variant = "light";
+      };
+      micro = mkVariant {
+        inherit system;
+        modules = [./nvf/base.nix ./nvf/micro.nix];
+        extraSpecialArgs.variant = "micro";
+      };
+    in {
+      full = {home.packages = [full.neovim];};
+      light = {home.packages = [light.neovim];};
+      micro = {home.packages = [micro.neovim];};
+    });
+
+    # Darwin Modules
+    darwinModules = forAllSystems (system: let
+      full = mkVariant {
+        inherit system;
+        modules = [./nvf/base.nix ./nvf/full.nix];
+        extraSpecialArgs.variant = "full";
+      };
+      light = mkVariant {
+        inherit system;
+        modules = [./nvf/base.nix ./nvf/light.nix];
+        extraSpecialArgs.variant = "light";
+      };
+      micro = mkVariant {
+        inherit system;
+        modules = [./nvf/base.nix ./nvf/micro.nix];
+        extraSpecialArgs.variant = "micro";
+      };
+    in {
+      full = {environment.systemPackages = [full.neovim];};
+      light = {environment.systemPackages = [light.neovim];};
+      micro = {environment.systemPackages = [micro.neovim];};
     });
 
     formatter = forAllSystems (system: let
@@ -72,12 +191,11 @@
 
     devShells = forAllSystems (system: let
       pkgs = import nixpkgs {inherit system;};
-      inherit (pkgs) lib;
       treefmtEval = treefmt-nix.lib.evalModule pkgs ./treefmt.nix;
 
       # Generate a set of options and a Optnix config for NVF
       optnixLib = optnix.mkLib pkgs;
-      nvfModuleInstance = nvf.lib.neovimConfiguration { inherit pkgs; };
+      nvfModuleInstance = nvf.lib.neovimConfiguration {inherit pkgs;};
       nvfOptionsList = optnixLib.mkOptionsList {
         inherit (nvfModuleInstance) options;
       };
@@ -86,10 +204,6 @@
         scopes.nvf = {
           description = "Neovim configuation module system";
           options-list-file = nvfOptionsList;
-
-          # Start of an evaluater command, but we would need to seperate out seperate scopes per variant
-          # I think we would have a problem with the programs.nvf.settings prefix as well here
-          # evaluator = "nix eval --impure --expr "let flake = builtins.getFlake \"$PWD\"; pkgs = import flake.inputs.nixpkgs { system = builtins.currentSystem; }; nvf = flake.inputs.nvf.lib.neovimConfiguration { inherit pkgs; }; in config.{{ .Option }}"
         };
       };
     in {
