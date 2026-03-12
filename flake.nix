@@ -4,6 +4,9 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 
+    nvf.url = "github:notashelf/nvf";
+    nvf.inputs.nixpkgs.follows = "nixpkgs";
+
     # Unison Programming Language support
     unison-lang.url = "github:giodamelio/unison-nix/giodamelio/init-ucm-desktop";
     unison-lang.inputs.nixpkgs.follows = "nixpkgs";
