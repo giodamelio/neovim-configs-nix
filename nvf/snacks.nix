@@ -1,83 +1,13 @@
-# Built-in NVF plugin modules configuration.
-# These are plugins that have dedicated NVF module support.
+# Snacks.nvim - dashboard, picker, terminal, indent, explorer.
 {
-  lib,
+  pkgs,
   variant ? "full",
   ...
 }: let
-  # mkLuaInline not needed - snacks setupOpts are passed directly
+  inherit (import ./lib.nix) nmapLua mapLua snacks snacksPicker snacksPickerOpts;
   isFullVariant = variant == "full";
 in {
   config.vim = {
-    # Icons
-    mini.icons.enable = true;
-
-    # Which-key for interactive keybind help
-    binds.whichKey.enable = true;
-
-    # Trouble for pretty diagnostic lists
-    lsp.trouble.enable = true;
-
-    # Snippets
-    snippets.luasnip.enable = true;
-
-    # Mini.ai for better text objects
-    mini.ai.enable = true;
-
-    # Mini.bufremove replaces bufdelete.nvim
-    mini.bufremove.enable = true;
-
-    # Rainbow delimiters for nested parens
-    visuals.rainbow-delimiters.enable = true;
-
-    # Comment.nvim for code commenting
-    comments.comment-nvim.enable = true;
-
-    # Smart splits for pane navigation
-    utility.smart-splits.enable = true;
-
-    # Diffview for git diffs
-    utility.diffview-nvim.enable = true;
-
-    # Nvim-notify for notifications
-    notify.nvim-notify.enable = true;
-
-    # Breadcrumbs (nvim-navic)
-    ui.breadcrumbs = {
-      enable = true;
-      lualine.winbar.enable = true;
-    };
-
-    # Git integration
-    git = {
-      gitsigns.enable = lib.mkDefault true;
-      neogit.enable = lib.mkDefault true;
-      gitlinker-nvim = {
-        enable = lib.mkDefault true;
-        setupOpts = {
-          mapping = null; # Disable default mapping, we define our own
-        };
-      };
-    };
-
-    # Status line
-    statusline.lualine = {
-      enable = true;
-      # NVF lualine has inline LSP progress, no need for lualine-lsp-progress plugin
-    };
-
-    # Oil file explorer
-    utility.oil-nvim = {
-      enable = true;
-      setupOpts = {
-        columns = ["icon"];
-        view_options = {
-          show_hidden = true;
-        };
-      };
-    };
-
-    # Snacks - dashboard, picker, terminal, indent, notify, explorer
     utility.snacks-nvim = {
       enable = true;
       setupOpts = {
@@ -182,18 +112,46 @@ in {
       };
     };
 
-    # Autocomplete with blink.cmp
-    autocomplete.blink-cmp = {
-      enable = true;
-      setupOpts = {
-        keymap.preset = "default";
-        appearance.nerd_font_variant = "mono";
-        completion = {
-          documentation.auto_show = false;
-        };
-        signature.enabled = true;
-        fuzzy.implementation = "prefer_rust_with_warning";
-      };
+    keymaps = [
+      # === Snacks Picker: Find ===
+      (nmapLua "<leader>f?" (snacksPicker "help") "Find help tags")
+      (nmapLua "<leader>fb" (snacksPicker "buffers") "Find buffer")
+      (nmapLua "<leader>ff" (snacksPicker "files") "Find file")
+      (nmapLua "<leader>fg" (snacksPicker "grep") "Find text")
+      (
+        nmapLua "<leader>fh" (snacksPickerOpts "files" "{ hidden = true, ignored = true }")
+        "Find file (hidden)"
+      )
+      (nmapLua "<leader>fm" (snacksPicker "marks") "Find marks")
+      (nmapLua "<leader>fr" (snacksPicker "resume") "Resume last search")
+      (nmapLua "<leader>fR" (snacksPicker "recent") "Find recent files")
+      (nmapLua "<leader>fc" (snacksPicker "command_history") "Find recent commands")
+      (nmapLua "<leader>fd" (snacksPicker "diagnostics_buffer") "Find buffer diagnostics")
+      (nmapLua "<leader>fD" (snacksPicker "diagnostics") "Find all diagnostics")
+      (nmapLua "<leader>fu" (snacksPicker "undo") "Find undo history")
+      (nmapLua "<leader>fp" (snacksPicker "pickers") "Find pickers")
+      (nmapLua "<leader>fn" (snacksPicker "notifications") "Find notifications")
+      (nmapLua "<leader>fF" (snacksPicker "smart") "Smart Finder")
+
+      # === Snacks Picker: Git ===
+      (nmapLua "<leader>fGb" (snacksPicker "git_branches") "Find Git branches")
+      (nmapLua "<leader>fGl" (snacksPicker "git_log") "Find Git log")
+      (nmapLua "<leader>fGL" (snacksPicker "git_log_line") "Find Git log line")
+      (nmapLua "<leader>fGs" (snacksPicker "git_status") "Find Git status")
+      (nmapLua "<leader>fGS" (snacksPicker "git_stash") "Find Git stash")
+      (nmapLua "<leader>fGd" (snacksPicker "git_diff") "Find Git diff")
+      (nmapLua "<leader>fGf" (snacksPicker "git_log_file") "Find Git log files")
+
+      # === Snacks: Terminal & Explorer ===
+      (mapLua ["n" "t"] "<leader>/" (snacks "terminal.toggle()") "Toggle terminal")
+      (nmapLua "<leader>`" (snacks "explorer.open()") "Open explorer")
+    ];
+
+    luaConfigRC = {
+      snacks-commands = builtins.readFile ./lua/snacks-commands.lua;
+      lua-eval = builtins.readFile ./lua/lua-eval.lua;
     };
+
+    extraPackages = with pkgs; [ripgrep fd];
   };
 }

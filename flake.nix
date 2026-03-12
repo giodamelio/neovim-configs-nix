@@ -69,19 +69,19 @@
 
       full = mkVariant {
         inherit system;
-        modules = [./nvf/base.nix ./nvf/full.nix];
+        modules = [./nvf/core.nix ./nvf/full.nix];
         extraSpecialArgs.variant = "full";
       };
 
       light = mkVariant {
         inherit system;
-        modules = [./nvf/base.nix ./nvf/light.nix];
+        modules = [./nvf/core.nix ./nvf/light.nix];
         extraSpecialArgs.variant = "light";
       };
 
       micro = mkVariant {
         inherit system;
-        modules = [./nvf/base.nix ./nvf/micro.nix];
+        modules = [./nvf/core.nix ./nvf/micro.nix];
         extraSpecialArgs.variant = "micro";
       };
     in {
@@ -103,32 +103,38 @@
 
     # NVF Modules for reuse
     nvfModules = {
-      base = ./nvf/base.nix;
-      plugins-builtin = ./nvf/plugins-builtin.nix;
-      plugins-custom = ./nvf/plugins-custom.nix;
-      keybindings = ./nvf/keybindings.nix;
-      languages = ./nvf/languages.nix;
+      core = ./nvf/core.nix;
+      snacks = ./nvf/snacks.nix;
+      lsp = ./nvf/lsp.nix;
+      git = ./nvf/git.nix;
+      navigation = ./nvf/navigation.nix;
+      treefmt = ./nvf/treefmt.nix;
+      nix = ./nvf/nix.nix;
+      neotest = ./nvf/neotest.nix;
+      claude = ./nvf/claude.nix;
+      extra-langs = ./nvf/extra-langs.nix;
       full = ./nvf/full.nix;
       light = ./nvf/light.nix;
       micro = ./nvf/micro.nix;
       neovide = ./nvf/neovide.nix;
+      lib = ./nvf/lib.nix;
     };
 
     # NixOS Modules
     nixosModules = forAllSystems (system: let
       full = mkVariant {
         inherit system;
-        modules = [./nvf/base.nix ./nvf/full.nix];
+        modules = [./nvf/core.nix ./nvf/full.nix];
         extraSpecialArgs.variant = "full";
       };
       light = mkVariant {
         inherit system;
-        modules = [./nvf/base.nix ./nvf/light.nix];
+        modules = [./nvf/core.nix ./nvf/light.nix];
         extraSpecialArgs.variant = "light";
       };
       micro = mkVariant {
         inherit system;
-        modules = [./nvf/base.nix ./nvf/micro.nix];
+        modules = [./nvf/core.nix ./nvf/micro.nix];
         extraSpecialArgs.variant = "micro";
       };
     in {
@@ -141,17 +147,17 @@
     homeManagerModules = forAllSystems (system: let
       full = mkVariant {
         inherit system;
-        modules = [./nvf/base.nix ./nvf/full.nix];
+        modules = [./nvf/core.nix ./nvf/full.nix];
         extraSpecialArgs.variant = "full";
       };
       light = mkVariant {
         inherit system;
-        modules = [./nvf/base.nix ./nvf/light.nix];
+        modules = [./nvf/core.nix ./nvf/light.nix];
         extraSpecialArgs.variant = "light";
       };
       micro = mkVariant {
         inherit system;
-        modules = [./nvf/base.nix ./nvf/micro.nix];
+        modules = [./nvf/core.nix ./nvf/micro.nix];
         extraSpecialArgs.variant = "micro";
       };
     in {
@@ -164,17 +170,17 @@
     darwinModules = forAllSystems (system: let
       full = mkVariant {
         inherit system;
-        modules = [./nvf/base.nix ./nvf/full.nix];
+        modules = [./nvf/core.nix ./nvf/full.nix];
         extraSpecialArgs.variant = "full";
       };
       light = mkVariant {
         inherit system;
-        modules = [./nvf/base.nix ./nvf/light.nix];
+        modules = [./nvf/core.nix ./nvf/light.nix];
         extraSpecialArgs.variant = "light";
       };
       micro = mkVariant {
         inherit system;
-        modules = [./nvf/base.nix ./nvf/micro.nix];
+        modules = [./nvf/core.nix ./nvf/micro.nix];
         extraSpecialArgs.variant = "micro";
       };
     in {
