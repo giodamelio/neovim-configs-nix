@@ -4,12 +4,10 @@
   lib,
   variant ? "full",
   ...
-}:
-let
+}: let
   # mkLuaInline not needed - snacks setupOpts are passed directly
   isFullVariant = variant == "full";
-in
-{
+in {
   config.vim = {
     # Icons
     mini.icons.enable = true;
@@ -72,7 +70,7 @@ in
     utility.oil-nvim = {
       enable = true;
       setupOpts = {
-        columns = [ "icon" ];
+        columns = ["icon"];
         view_options = {
           show_hidden = true;
         };
@@ -132,7 +130,7 @@ in
             ];
           };
           sections = [
-            { section = "header"; }
+            {section = "header";}
             {
               section = "keys";
               gap = 1;

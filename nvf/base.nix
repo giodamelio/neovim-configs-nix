@@ -1,7 +1,6 @@
 # Base NVF configuration shared by all variants.
 # Contains core vim options, leader keys, theme, and foundational settings.
-{ lib, ... }:
-{
+{lib, ...}: {
   config.vim = {
     # Leader keys
     globals = {

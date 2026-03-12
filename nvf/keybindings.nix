@@ -1,236 +1,157 @@
-# Keybindings configuration.
-# Global keymaps via vim.keymaps and complex keymaps via luaConfigRC.
+# Keybindings configuration using NVF's vim.keymaps system.
 {
   lib,
   variant ? "full",
   ...
 }:
 let
+  inherit (import ./lib.nix)
+    cmd
+    nmap
+    nmapLua
+    mapLua
+    snacks
+    snacksPicker
+    snacksPickerOpts
+    ;
+
   isFullVariant = variant == "full";
+  isLightVariant = variant == "light";
+  hasGit = isFullVariant || isLightVariant;
 in
 {
   config.vim = {
-    # Global keymaps
+    # Which-key group registrations
+    binds.whichKey.register = {
+      "<leader>f" = "Find";
+      "<leader>fG" = "Git";
+      "<leader>l" = "LSP";
+      "<leader>d" = "Diagnostics";
+      "<leader>t" = "Testing";
+      "<leader>o" = "Other";
+      "<leader><leader>" = "Swap/Grapple";
+    }
+    // lib.optionalAttrs hasGit {
+      "<leader>g" = "Git";
+    }
+    // lib.optionalAttrs isFullVariant {
+      "<leader>c" = "Claude";
+    };
+
+    # All keymaps in one place
     keymaps = [
-      # Buffer switching
-      {
-        key = "<leader><Tab>";
-        mode = "n";
-        action = "<cmd>b#<cr>";
-        desc = "Switch to last buffer";
-      }
+      # === Buffer ===
+      (nmap "<leader><Tab>" (cmd "b#") "Switch to last buffer")
 
-      # LSP keybindings
-      {
-        key = "K";
-        mode = "n";
-        action = "<cmd>lua vim.lsp.buf.hover()<cr>";
-        desc = "Show hover docs";
-      }
-      {
-        key = "<leader>ll";
-        mode = "n";
-        action = "<cmd>lua vim.lsp.buf.code_action()<cr>";
-        desc = "Show code actions";
-      }
-      {
-        key = "<leader>lf";
-        mode = "n";
-        action = "<cmd>lua vim.lsp.buf.format()<cr>";
-        desc = "Format buffer";
-      }
-      {
-        key = "<leader>lR";
-        mode = "n";
-        action = "<cmd>lua vim.lsp.buf.rename()<cr>";
-        desc = "Rename under cursor";
-      }
+      # === LSP ===
+      (nmapLua "K" "vim.lsp.buf.hover()" "Show hover docs")
+      (nmapLua "<leader>ll" "vim.lsp.buf.code_action()" "Show code actions")
+      (nmapLua "<leader>lf" "vim.lsp.buf.format()" "Format buffer")
+      (nmapLua "<leader>lR" "vim.lsp.buf.rename()" "Rename under cursor")
 
-      # Trouble diagnostics
-      {
-        key = "<leader>dd";
-        mode = "n";
-        action = "<cmd>Trouble diagnostics toggle<cr>";
-        desc = "Document diagnostics";
-      }
-      {
-        key = "<leader>dl";
-        mode = "n";
-        action = "<cmd>Trouble lsp toggle<cr>";
-        desc = "LSP toggle";
-      }
-      {
-        key = "<leader>de";
-        mode = "n";
-        action = "<cmd>Trouble lsp_definitions toggle<cr>";
-        desc = "Definitions";
-      }
-      {
-        key = "<leader>di";
-        mode = "n";
-        action = "<cmd>Trouble lsp_implementations toggle<cr>";
-        desc = "Implementations";
-      }
-      {
-        key = "<leader>dr";
-        mode = "n";
-        action = "<cmd>Trouble lsp_references toggle<cr>";
-        desc = "References";
-      }
-      {
-        key = "<leader>dn";
-        mode = "n";
-        action = "<cmd>lua require('trouble').next({ skip_groups = true, jump = true })<cr>";
-        desc = "Next diagnostic";
-      }
-      {
-        key = "<leader>dp";
-        mode = "n";
-        action = "<cmd>lua require('trouble').prev({ skip_groups = true, jump = true })<cr>";
-        desc = "Previous diagnostic";
-      }
+      # === Trouble Diagnostics ===
+      (nmap "<leader>dd" (cmd "Trouble diagnostics toggle") "Document diagnostics")
+      (nmap "<leader>dl" (cmd "Trouble lsp toggle") "LSP toggle")
+      (nmap "<leader>de" (cmd "Trouble lsp_definitions toggle") "Definitions")
+      (nmap "<leader>di" (cmd "Trouble lsp_implementations toggle") "Implementations")
+      (nmap "<leader>dr" (cmd "Trouble lsp_references toggle") "References")
+      (nmapLua "<leader>dn" "require('trouble').next({ skip_groups = true, jump = true })"
+        "Next diagnostic"
+      )
+      (nmapLua "<leader>dp" "require('trouble').prev({ skip_groups = true, jump = true })"
+        "Previous diagnostic"
+      )
+
+      # === Snacks Picker: Find ===
+      (nmapLua "<leader>f?" (snacksPicker "help") "Find help tags")
+      (nmapLua "<leader>fb" (snacksPicker "buffers") "Find buffer")
+      (nmapLua "<leader>ff" (snacksPicker "files") "Find file")
+      (nmapLua "<leader>fg" (snacksPicker "grep") "Find text")
+      (nmapLua "<leader>fh" (snacksPickerOpts "files" "{ hidden = true, ignored = true }")
+        "Find file (hidden)"
+      )
+      (nmapLua "<leader>fm" (snacksPicker "marks") "Find marks")
+      (nmapLua "<leader>fr" (snacksPicker "resume") "Resume last search")
+      (nmapLua "<leader>fR" (snacksPicker "recent") "Find recent files")
+      (nmapLua "<leader>fc" (snacksPicker "command_history") "Find recent commands")
+      (nmapLua "<leader>fd" (snacksPicker "diagnostics_buffer") "Find buffer diagnostics")
+      (nmapLua "<leader>fD" (snacksPicker "diagnostics") "Find all diagnostics")
+      (nmapLua "<leader>fu" (snacksPicker "undo") "Find undo history")
+      (nmapLua "<leader>fp" (snacksPicker "pickers") "Find pickers")
+      (nmapLua "<leader>fn" (snacksPicker "notifications") "Find notifications")
+      (nmapLua "<leader>fF" (snacksPicker "smart") "Smart Finder")
+
+      # === Snacks Picker: Git ===
+      (nmapLua "<leader>fGb" (snacksPicker "git_branches") "Find Git branches")
+      (nmapLua "<leader>fGl" (snacksPicker "git_log") "Find Git log")
+      (nmapLua "<leader>fGL" (snacksPicker "git_log_line") "Find Git log line")
+      (nmapLua "<leader>fGs" (snacksPicker "git_status") "Find Git status")
+      (nmapLua "<leader>fGS" (snacksPicker "git_stash") "Find Git stash")
+      (nmapLua "<leader>fGd" (snacksPicker "git_diff") "Find Git diff")
+      (nmapLua "<leader>fGf" (snacksPicker "git_log_file") "Find Git log files")
+
+      # === Snacks Picker: LSP ===
+      (nmapLua "<leader>lD" (snacksPicker "lsp_definitions") "Show definitions")
+      (nmapLua "<leader>ld" (snacksPicker "lsp_declarations") "Show declarations")
+      (nmapLua "<leader>li" (snacksPicker "lsp_implementations") "Show implementations")
+      (nmapLua "<leader>ls" (snacksPicker "lsp_symbols") "Show buffer symbols")
+      (nmapLua "<leader>lS" (snacksPicker "lsp_workspace_symbols") "Show workspace symbols")
+      (nmapLua "<leader>lr" (snacksPicker "lsp_references") "Show references")
+      (nmapLua "<leader>lt" (snacksPicker "lsp_type_definitions") "Show type definition")
+
+      # === Snacks: Terminal & Explorer ===
+      (mapLua [ "n" "t" ] "<leader>/" (snacks "terminal.toggle()") "Toggle terminal")
+      (nmapLua "<leader>`" (snacks "explorer.open()") "Open explorer")
+
+      # === Smart Splits ===
+      (nmapLua "<A-h>" "require('smart-splits').resize_left()" "Resize left")
+      (nmapLua "<A-j>" "require('smart-splits').resize_down()" "Resize down")
+      (nmapLua "<A-k>" "require('smart-splits').resize_up()" "Resize up")
+      (nmapLua "<A-l>" "require('smart-splits').resize_right()" "Resize right")
+      (mapLua [ "n" "t" "v" ] "<C-h>" "require('smart-splits').move_cursor_left()" "Move to left split")
+      (mapLua [ "n" "t" "v" ] "<C-j>" "require('smart-splits').move_cursor_down()" "Move to below split")
+      (mapLua [ "n" "t" "v" ] "<C-k>" "require('smart-splits').move_cursor_up()" "Move to above split")
+      (mapLua [ "n" "t" "v" ] "<C-l>" "require('smart-splits').move_cursor_right()" "Move to right split")
+      (nmapLua "<C-\\>" "require('smart-splits').move_cursor_previous()" "Move to previous split")
+      (nmapLua "<leader><leader>h" "require('smart-splits').swap_buf_left()" "Swap buffer left")
+      (nmapLua "<leader><leader>j" "require('smart-splits').swap_buf_down()" "Swap buffer down")
+      (nmapLua "<leader><leader>k" "require('smart-splits').swap_buf_up()" "Swap buffer up")
+      (nmapLua "<leader><leader>l" "require('smart-splits').swap_buf_right()" "Swap buffer right")
+
+      # === Grapple ===
+      (nmapLua "<leader><leader><Tab>" "require('grapple').toggle_tags()" "Grapple tags")
+      (nmapLua "<leader><leader>a" "require('grapple').tag()" "Grapple add")
+      (nmapLua "<leader><leader>d" "require('grapple').untag()" "Grapple remove")
+      (nmapLua "<leader><leader>1" "require('grapple').select({ index = 1 })" "Grapple 1")
+      (nmapLua "<leader><leader>2" "require('grapple').select({ index = 2 })" "Grapple 2")
+      (nmapLua "<leader><leader>3" "require('grapple').select({ index = 3 })" "Grapple 3")
+      (nmapLua "<leader><leader>4" "require('grapple').select({ index = 4 })" "Grapple 4")
+    ]
+    # === Git keybindings (full + light) ===
+    ++ lib.optionals hasGit [
+      (nmapLua "<leader>gb" "Snacks.git.blame_line()" "Blame current line")
+      (nmapLua "<leader>gn" "require('gitsigns').next_hunk()" "Next hunk")
+      (nmapLua "<leader>gp" "require('gitsigns').prev_hunk()" "Previous hunk")
+      (mapLua [ "n" "v" ] "<leader>gr" "require('gitsigns').reset_hunk()" "Reset hunk")
+      (mapLua [ "n" "v" ] "<leader>gs" "require('gitsigns').stage_hunk()" "Stage hunk")
+      (nmapLua "<leader>gu" "require('gitsigns').undo_stage_hunk()" "Unstage hunk")
+      (nmapLua "<leader>go" "Snacks.gitbrowse()" "Open file in browser")
+      (nmap "<leader>gg" (cmd "Neogit") "Open Neogit")
+    ]
+    # === Neotest keybindings (full only) ===
+    ++ lib.optionals isFullVariant [
+      (nmapLua "<leader>tt" "require('neotest').run.run()" "Run nearest test")
+      (nmapLua "<leader>tf" "require('neotest').run.run(vim.fn.expand('%'))" "Run file tests")
+      (nmapLua "<leader>ts" "require('neotest').summary.toggle()" "Toggle summary")
+      (nmapLua "<leader>tp" "require('neotest').output_panel.toggle()" "Toggle output panel")
+      (nmapLua "<leader>tw" "require('neotest').watch.toggle(vim.fn.expand('%'))" "Watch tests")
+      (nmapLua "<leader>ta" "require('neotest').run.attach()" "Attach to test")
+      (nmapLua "<leader>tl" "require('neotest').run.run_last()" "Run last test")
     ];
 
-    # Complex keymaps via luaConfigRC
+    # Minimal luaConfigRC for things that can't be keymaps
     luaConfigRC = {
-      # Which-key group registrations
-      which-key-groups = ''
-        local wk = require("which-key")
-        wk.add({
-          { "<leader>f", group = "Find" },
-          { "<leader>fG", group = "Git" },
-          { "<leader>l", group = "LSP" },
-          { "<leader>d", group = "Diagnostics" },
-          { "<leader>g", group = "Git" },
-          { "<leader>t", group = "Testing" },
-          { "<leader>o", group = "Other" },
-          { "<leader><leader><Tab>", group = "Grapple" },
-          ${if isFullVariant then ''{ "<leader>c", group = "Claude" },'' else ""}
-        })
-      '';
-
-      # Snacks picker keybindings
-      snacks-keybindings = ''
-        local snacks = require("snacks")
-
-        -- Find keybindings
-        local function files_hidden()
-          snacks.picker.files({
-            finder = "files",
-            format = "file",
-            show_empty = true,
-            hidden = true,
-            ignored = true,
-            follow = false,
-            supports_live = true,
-          })
-        end
-
-        vim.keymap.set("n", "<leader>f?", snacks.picker.help, { desc = "Find help tags" })
-        vim.keymap.set("n", "<leader>fb", snacks.picker.buffers, { desc = "Find buffer" })
-        vim.keymap.set("n", "<leader>ff", snacks.picker.files, { desc = "Find file" })
-        vim.keymap.set("n", "<leader>fg", snacks.picker.grep, { desc = "Find line in file" })
-        vim.keymap.set("n", "<leader>fh", files_hidden, { desc = "Find file (including hidden)" })
-        vim.keymap.set("n", "<leader>fm", snacks.picker.marks, { desc = "Find marks" })
-        vim.keymap.set("n", "<leader>fr", snacks.picker.resume, { desc = "Resume last search" })
-        vim.keymap.set("n", "<leader>fR", snacks.picker.recent, { desc = "Find recent files" })
-        vim.keymap.set("n", "<leader>fc", snacks.picker.command_history, { desc = "Find recent commands" })
-        vim.keymap.set("n", "<leader>f:", snacks.picker.commands, { desc = "Find recent commands" })
-        vim.keymap.set("n", "<leader>fd", snacks.picker.diagnostics_buffer, { desc = "Find buffer diagnostics" })
-        vim.keymap.set("n", "<leader>fD", snacks.picker.diagnostics, { desc = "Find all diagnostics" })
-        vim.keymap.set("n", "<leader>fu", snacks.picker.undo, { desc = "Find undo history" })
-        vim.keymap.set("n", "<leader>fp", snacks.picker.pickers, { desc = "Find pickers" })
-        vim.keymap.set("n", "<leader>fn", snacks.picker.notifications, { desc = "Find notifications" })
-        vim.keymap.set("n", "<leader>fF", snacks.picker.smart, { desc = "Smart Finder" })
-
-        -- Git find keybindings
-        vim.keymap.set("n", "<leader>fGb", snacks.picker.git_branches, { desc = "Find Git branches" })
-        vim.keymap.set("n", "<leader>fGl", snacks.picker.git_log, { desc = "Find Git log" })
-        vim.keymap.set("n", "<leader>fGL", snacks.picker.git_log_line, { desc = "Find Git log line" })
-        vim.keymap.set("n", "<leader>fGs", snacks.picker.git_status, { desc = "Find Git status" })
-        vim.keymap.set("n", "<leader>fGS", snacks.picker.git_stash, { desc = "Find Git stash" })
-        vim.keymap.set("n", "<leader>fGd", snacks.picker.git_diff, { desc = "Find Git diff (hunks)" })
-        vim.keymap.set("n", "<leader>fGf", snacks.picker.git_log_file, { desc = "Find Git log files" })
-
-        -- LSP picker keybindings
-        vim.keymap.set("n", "<leader>lD", snacks.picker.lsp_definitions, { desc = "Show definitions" })
-        vim.keymap.set("n", "<leader>ld", snacks.picker.lsp_declarations, { desc = "Show declarations" })
-        vim.keymap.set("n", "<leader>li", snacks.picker.lsp_implementations, { desc = "Show implementations" })
-        vim.keymap.set("n", "<leader>ls", snacks.picker.lsp_symbols, { desc = "Show buffer symbols" })
-        vim.keymap.set("n", "<leader>lS", snacks.picker.lsp_workspace_symbols, { desc = "Show workspace symbols" })
-        vim.keymap.set("n", "<leader>lr", snacks.picker.lsp_references, { desc = "Show references" })
-        vim.keymap.set("n", "<leader>lt", snacks.picker.lsp_type_definitions, { desc = "Show type definition" })
-
-        -- Terminal toggle
-        vim.keymap.set("n", "<leader>/", snacks.terminal.toggle, { desc = "Toggle terminal" })
-        vim.keymap.set("t", "<leader>/", snacks.terminal.toggle, { desc = "Toggle terminal" })
-
-        -- Explorer
-        vim.keymap.set("n", "<leader>`", snacks.explorer.open)
-
-        -- Debug helpers
-        _G.dd = function(...) snacks.debug.inspect(...) end
-        _G.bt = function() snacks.debug.backtrace() end
-        vim.print = _G.dd
-      '';
-
-      # Git keybindings
-      git-keybindings = ''
-        -- Only set up git keybindings if gitsigns is available
-        local gitsigns_ok, gitsigns = pcall(require, "gitsigns")
-        local snacks = require("snacks")
-
-        if gitsigns_ok then
-          vim.keymap.set("n", "<leader>gb", function() snacks.git.blame_line() end, { desc = "Blame current line" })
-          vim.keymap.set("n", "<leader>gn", gitsigns.next_hunk, { desc = "Next hunk" })
-          vim.keymap.set("n", "<leader>gp", gitsigns.prev_hunk, { desc = "Previous hunk" })
-          vim.keymap.set({ "n", "v" }, "<leader>gr", gitsigns.reset_hunk, { desc = "Reset hunk" })
-          vim.keymap.set({ "n", "v" }, "<leader>gs", gitsigns.stage_hunk, { desc = "Stage hunk" })
-          vim.keymap.set("n", "<leader>gu", gitsigns.undo_stage_hunk, { desc = "Unstage hunk" })
-          vim.keymap.set("n", "<leader>go", function() snacks.gitbrowse() end, { desc = "Open file in browser" })
-          vim.keymap.set("n", "<leader>gg", "<cmd>Neogit<cr>", { desc = "Open Neogit" })
-
-          -- Gitlinker keybindings
-          local gitlinker_ok, gitlinker = pcall(require, "gitlinker")
-          if gitlinker_ok then
-            vim.keymap.set({ "n", "v" }, "<leader>gy", function()
-              gitlinker.link({
-                action = function(url)
-                  vim.fn.setreg('"', url)
-                end,
-                lstart = vim.api.nvim_buf_get_mark(0, "<")[1],
-                lend = vim.api.nvim_buf_get_mark(0, ">")[1],
-              })
-            end, { desc = "Copy permalink" })
-          end
-        end
-      '';
-
-      # Smart splits keybindings
-      smart-splits-keybindings = ''
-        local splits = require("smart-splits")
-
-        -- Resize
-        vim.keymap.set("n", "<A-h>", splits.resize_left, { desc = "Resize left" })
-        vim.keymap.set("n", "<A-j>", splits.resize_down, { desc = "Resize down" })
-        vim.keymap.set("n", "<A-k>", splits.resize_up, { desc = "Resize up" })
-        vim.keymap.set("n", "<A-l>", splits.resize_right, { desc = "Resize right" })
-
-        -- Move cursor between splits
-        vim.keymap.set({ "n", "t", "v" }, "<C-h>", splits.move_cursor_left, { desc = "Move to left split" })
-        vim.keymap.set({ "n", "t", "v" }, "<C-j>", splits.move_cursor_down, { desc = "Move to below split" })
-        vim.keymap.set({ "n", "t", "v" }, "<C-k>", splits.move_cursor_up, { desc = "Move to above split" })
-        vim.keymap.set({ "n", "t", "v" }, "<C-l>", splits.move_cursor_right, { desc = "Move to right split" })
-        vim.keymap.set("n", "<C-\\>", splits.move_cursor_previous, { desc = "Move to previous split" })
-
-        -- Swap buffers
-        vim.keymap.set("n", "<leader><leader>h", splits.swap_buf_left, { desc = "Swap buffer left" })
-        vim.keymap.set("n", "<leader><leader>j", splits.swap_buf_down, { desc = "Swap buffer down" })
-        vim.keymap.set("n", "<leader><leader>k", splits.swap_buf_up, { desc = "Swap buffer up" })
-        vim.keymap.set("n", "<leader><leader>l", splits.swap_buf_right, { desc = "Swap buffer right" })
-      '';
-
-      # Treefmt keybinding
+      # Treefmt keybinding (needs shell command)
       treefmt-keybinding = ''
         vim.keymap.set("n", "<localleader>f", function()
           local treefmt = vim.fn.exepath("treefmt")
@@ -243,55 +164,15 @@ in
         end, { desc = "Format with treefmt" })
       '';
 
-      # Lua eval keybinding (filetype-specific)
-      lua-eval-keybinding = ''
-        vim.api.nvim_create_autocmd("FileType", {
-          pattern = "lua",
-          callback = function()
-            vim.keymap.set({ "n", "v" }, "<localleader>e", function()
-              require("snacks").debug.run()
-            end, { buffer = true, desc = "Evaluate Lua" })
-          end,
-        })
-      '';
-
-      # NixInstall command for nixos-configs
-      nix-install-command = ''
-        vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
-          pattern = vim.fn.expand("~/nixos-configs") .. "/*",
-          callback = function()
-            vim.api.nvim_buf_create_user_command(0, "NixInstall", function()
-              require("snacks").terminal('nix-activate-config; echo "Press any key to close..."; read -n 1', {
-                cwd = vim.fn.expand("~/nixos-configs"),
-                win = {
-                  position = "bottom",
-                  height = 0.4,
-                },
-                auto_close = true,
-              })
-            end, { desc = "Install Nix configuration" })
-          end,
-        })
-
-        -- Show notification when entering nixos-configs
-        vim.api.nvim_create_autocmd("CursorMoved", {
-          pattern = vim.fn.expand("~/nixos-configs") .. "/*",
-          once = true,
-          callback = function()
-            vim.defer_fn(function()
-              require("snacks").notifier.notify("Use :NixInstall to apply configuration", {
-                title = "Nix Configuration",
-                level = "info",
-                timeout = 5000,
-              })
-            end, 500)
-          end,
-        })
+      # Debug helpers
+      debug-helpers = ''
+        _G.dd = function(...) Snacks.debug.inspect(...) end
+        _G.bt = function() Snacks.debug.backtrace() end
+        vim.print = _G.dd
       '';
 
       # User commands
       user-commands = ''
-        -- BdeleteAll command
         vim.api.nvim_create_user_command("BdeleteAll", function()
           local current = vim.api.nvim_get_current_buf()
           for _, buf in ipairs(vim.api.nvim_list_bufs()) do
@@ -301,7 +182,6 @@ in
           end
         end, { desc = "Delete all buffers except current" })
 
-        -- LspCapabilities command
         vim.api.nvim_create_user_command("LspCapabilities", function()
           local clients = vim.lsp.get_clients({ bufnr = 0 })
           for _, client in ipairs(clients) do
@@ -309,42 +189,39 @@ in
           end
         end, { desc = "Show LSP capabilities" })
 
-        -- Dashboard command
         vim.api.nvim_create_user_command("Dashboard", function()
-          require("snacks").dashboard.open()
+          Snacks.dashboard.open()
         end, { desc = "Open dashboard" })
+      '';
 
-        -- Files with hidden support
-        vim.api.nvim_create_user_command("FilesHidden", function()
-          require("snacks").picker.files({
-            finder = "files",
-            format = "file",
-            show_empty = true,
-            hidden = true,
-            ignored = true,
-            follow = false,
-            supports_live = true,
-          })
-        end, { desc = "Find files including hidden ones" })
+      # Gitlinker setup (full + light)
+      gitlinker-keybindings = lib.mkIf hasGit ''
+        local gitlinker_ok, gitlinker = pcall(require, "gitlinker")
+        if gitlinker_ok then
+          vim.keymap.set({ "n", "v" }, "<leader>gy", function()
+            gitlinker.link({
+              action = function(url) vim.fn.setreg('"', url) end,
+              lstart = vim.api.nvim_buf_get_mark(0, "<")[1],
+              lend = vim.api.nvim_buf_get_mark(0, ">")[1],
+            })
+          end, { desc = "Copy permalink" })
+        end
+      '';
 
-        -- Lua debug commands
-        vim.api.nvim_create_user_command("LuaDebugRun", function()
-          require("snacks").debug.run()
-        end, { desc = "Run current Lua file/selection" })
-
+      # Lua eval for lua files
+      lua-eval = ''
         vim.api.nvim_create_autocmd("FileType", {
           pattern = "lua",
           callback = function()
-            vim.api.nvim_buf_create_user_command(0, "LuaEval", function()
-              require("snacks").debug.run()
-            end, { desc = "Evaluate current Lua file/selection", range = true })
+            vim.keymap.set({ "n", "v" }, "<localleader>e", function()
+              Snacks.debug.run()
+            end, { buffer = true, desc = "Evaluate Lua" })
           end,
         })
       '';
 
-      # Neotest setup and keybindings (full variant only)
-      neotest-config = lib.mkIf isFullVariant ''
-        -- Setup neotest with adapters
+      # Neotest setup (full only)
+      neotest-setup = lib.mkIf isFullVariant ''
         require("neotest").setup({
           adapters = {
             require("neotest-rust"),
@@ -355,15 +232,22 @@ in
             require("neotest-python"),
           },
         })
+      '';
 
-        -- Neotest keybindings
-        vim.keymap.set("n", "<leader>tt", function() require("neotest").run.run() end, { desc = "Run nearest test" })
-        vim.keymap.set("n", "<leader>tf", function() require("neotest").run.run(vim.fn.expand("%")) end, { desc = "Run file tests" })
-        vim.keymap.set("n", "<leader>ts", function() require("neotest").summary.toggle() end, { desc = "Toggle summary" })
-        vim.keymap.set("n", "<leader>tp", function() require("neotest").output_panel.toggle() end, { desc = "Toggle output panel" })
-        vim.keymap.set("n", "<leader>tw", function() require("neotest").watch.toggle(vim.fn.expand("%")) end, { desc = "Watch tests" })
-        vim.keymap.set("n", "<leader>ta", function() require("neotest").run.attach() end, { desc = "Attach to test" })
-        vim.keymap.set("n", "<leader>tl", function() require("neotest").run.run_last() end, { desc = "Run last test" })
+      # NixInstall command for nixos-configs
+      nix-install = ''
+        vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
+          pattern = vim.fn.expand("~/nixos-configs") .. "/*",
+          callback = function()
+            vim.api.nvim_buf_create_user_command(0, "NixInstall", function()
+              Snacks.terminal('nix-activate-config; echo "Press any key to close..."; read -n 1', {
+                cwd = vim.fn.expand("~/nixos-configs"),
+                win = { position = "bottom", height = 0.4 },
+                auto_close = true,
+              })
+            end, { desc = "Install Nix configuration" })
+          end,
+        })
       '';
     };
   };

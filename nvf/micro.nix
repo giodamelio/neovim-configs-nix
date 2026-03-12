@@ -3,7 +3,9 @@
   pkgs,
   lib,
   ...
-}: {
+}: let
+  inherit (import ./lib.nix) nmapLua;
+in {
   config.vim = {
     # Variant identifier
     globals.neovim_variant = "micro";
@@ -34,73 +36,52 @@
               padding = 1;
             }
           ];
-          preset = {
-            keys = [
-              {
-                icon = " ";
-                key = "f";
-                desc = "Find File";
-                action = ":lua Snacks.picker.files()";
-              }
-              {
-                icon = " ";
-                key = "g";
-                desc = "Find Text";
-                action = ":lua Snacks.picker.grep()";
-              }
-              {
-                icon = " ";
-                key = "r";
-                desc = "Recent Files";
-                action = ":lua Snacks.picker.recent()";
-              }
-              {
-                icon = " ";
-                key = "q";
-                desc = "Quit";
-                action = ":qa";
-              }
-            ];
-          };
+          preset.keys = [
+            {
+              icon = " ";
+              key = "f";
+              desc = "Find File";
+              action = ":lua Snacks.picker.files()";
+            }
+            {
+              icon = " ";
+              key = "g";
+              desc = "Find Text";
+              action = ":lua Snacks.picker.grep()";
+            }
+            {
+              icon = " ";
+              key = "r";
+              desc = "Recent Files";
+              action = ":lua Snacks.picker.recent()";
+            }
+            {
+              icon = " ";
+              key = "q";
+              desc = "Quit";
+              action = ":qa";
+            }
+          ];
         };
         picker.enable = true;
         explorer.enable = true;
       };
     };
 
-    # Basic keybindings for micro
+    # Which-key groups
+    binds.whichKey.register = {
+      "<leader>f" = "Find";
+    };
+
+    # Keymaps using helpers
     keymaps = [
-      {
-        key = "<leader>ff";
-        mode = "n";
-        action = "<cmd>lua Snacks.picker.files()<cr>";
-        desc = "Find files";
-      }
-      {
-        key = "<leader>fg";
-        mode = "n";
-        action = "<cmd>lua Snacks.picker.grep()<cr>";
-        desc = "Find text";
-      }
-      {
-        key = "<leader>fb";
-        mode = "n";
-        action = "<cmd>lua Snacks.picker.buffers()<cr>";
-        desc = "Find buffers";
-      }
-      {
-        key = "<leader>fr";
-        mode = "n";
-        action = "<cmd>lua Snacks.picker.recent()<cr>";
-        desc = "Recent files";
-      }
-      {
-        key = "<leader>`";
-        mode = "n";
-        action = "<cmd>lua Snacks.explorer.open()<cr>";
-        desc = "Explorer";
-      }
+      (nmapLua "<leader>ff" "Snacks.picker.files()" "Find files")
+      (nmapLua "<leader>fg" "Snacks.picker.grep()" "Find text")
+      (nmapLua "<leader>fb" "Snacks.picker.buffers()" "Find buffers")
+      (nmapLua "<leader>fr" "Snacks.picker.recent()" "Recent files")
+      (nmapLua "<leader>`" "Snacks.explorer.open()" "Explorer")
     ];
+
     # Runtime dependencies
     extraPackages = with pkgs; [
       ripgrep
