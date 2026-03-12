@@ -7,3 +7,7 @@
 - [ ] Telescope AST search. https://github.com/ray-x/telescope-ast-grep.nvim
 
 - [ ] Try out NVF again. Maybe it's lazy loading would work fine.
+
+- [ ] Make a super leight weight config that is portable to external Neovim and normal Vim, it should be a derivation that builds a .vimrc.
+  - [ ] A curl piped to sh script to run it anywhere. So I can do `curl https://vim.giodamelio.com | sh` to get at least a basic editor on any computer that has Vim installed.
+  - [ ] Maybe an advanced version that detects neovim and installs a more advanced (but still basic) lua config.
