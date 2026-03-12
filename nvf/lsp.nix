@@ -9,8 +9,29 @@
   isFullVariant = variant == "full";
 in {
   config.vim = {
-    # Trouble for pretty diagnostic lists
+    # Trouble for diagnostics
     lsp.trouble.enable = true;
+
+    # Format on save (replaces manual auto-format.lua)
+    lsp.formatOnSave = true;
+
+    # Disable NVF's default LSP keybinds (we define our own below)
+    lsp.mappings = {
+      hover = null;
+      codeAction = null;
+      format = null;
+      renameSymbol = null;
+      goToDefinition = null;
+      goToDeclaration = null;
+      goToType = null;
+      listImplementations = null;
+      listReferences = null;
+      listDocumentSymbols = null;
+      listWorkspaceSymbols = null;
+      nextDiagnostic = null;
+      previousDiagnostic = null;
+      openDiagnosticFloat = null;
+    };
 
     # Autocomplete with blink.cmp
     autocomplete.blink-cmp = {
@@ -70,10 +91,7 @@ in {
         # Rust (uses rustaceanvim under the hood)
         rust = {
           enable = true;
-          lsp = {
-            enable = true;
-            # Configure rust-analyzer to use clippy via luaConfigRC
-          };
+          lsp.enable = true;
         };
 
         # Go
@@ -117,11 +135,10 @@ in {
     # Keymaps
     keymaps = [
       # === LSP ===
-      (nmapLua "K" "vim.lsp.buf.hover()" "Show hover docs")
-      (nmapLua "<leader>ll" "vim.lsp.buf.code_action()" "Show code actions")
+      (nmapLua "K" "vim.lsp.buf.hover()" "Hover docs")
+      (nmapLua "<leader>ll" "vim.lsp.buf.code_action()" "Code actions")
       (nmapLua "<leader>lf" "vim.lsp.buf.format()" "Format buffer")
-      (nmapLua "<leader>lR" "vim.lsp.buf.rename()" "Rename under cursor")
-
+      (nmapLua "<leader>lR" "vim.lsp.buf.rename()" "Rename symbol")
       # === Trouble Diagnostics ===
       (nmap "<leader>dd" (cmd "Trouble diagnostics toggle") "Document diagnostics")
       (nmap "<leader>dl" (cmd "Trouble lsp toggle") "LSP toggle")
@@ -155,8 +172,5 @@ in {
         then builtins.readFile ./lua/custom-lsp-full.lua
         else ""
       );
-
-    # Auto-format on save
-    luaConfigRC.auto-format = builtins.readFile ./lua/auto-format.lua;
   };
 }

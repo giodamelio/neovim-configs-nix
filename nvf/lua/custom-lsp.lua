@@ -17,17 +17,7 @@ vim.lsp.config("lexical", {
 	cmd = { "lexical" },
 })
 
--- Configure rust-analyzer to use clippy
-vim.lsp.config("rust_analyzer", {
-	settings = {
-		["rust-analyzer"] = {
-			check = {
-				command = "clippy",
-			},
-		},
-	},
-})
-
+-- Note: rust-analyzer clippy is configured via vim.globals.rustaceanvim in lsp.nix
 -- Enable custom LSP servers
 vim.lsp.enable("nixd")
 vim.lsp.enable("expert")
