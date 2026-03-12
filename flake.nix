@@ -14,12 +14,18 @@
     # Formatting
     treefmt-nix.url = "github:numtide/treefmt-nix";
     treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
+
+    # Nix Module Options search based directly on modules themselves
+    optnix.url = "sourcehut:~watersucks/optnix";
+    optnix.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = {
     nixpkgs,
     unison-lang,
     treefmt-nix,
+    nvf,
+    optnix,
     ...
   }: let
     supportedSystems = ["x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin"];
@@ -66,7 +72,26 @@
 
     devShells = forAllSystems (system: let
       pkgs = import nixpkgs {inherit system;};
+      inherit (pkgs) lib;
       treefmtEval = treefmt-nix.lib.evalModule pkgs ./treefmt.nix;
+
+      # Generate a set of options and a Optnix config for NVF
+      optnixLib = optnix.mkLib pkgs;
+      nvfModuleInstance = nvf.lib.neovimConfiguration { inherit pkgs; };
+      nvfOptionsList = optnixLib.mkOptionsList {
+        inherit (nvfModuleInstance) options;
+      };
+      optnixConfig = (pkgs.formats.toml {}).generate "optnix.toml" {
+        default_scope = "nvf";
+        scopes.nvf = {
+          description = "Neovim configuation module system";
+          options-list-file = nvfOptionsList;
+
+          # Start of an evaluater command, but we would need to seperate out seperate scopes per variant
+          # I think we would have a problem with the programs.nvf.settings prefix as well here
+          # evaluator = "nix eval --impure --expr "let flake = builtins.getFlake \"$PWD\"; pkgs = import flake.inputs.nixpkgs { system = builtins.currentSystem; }; nvf = flake.inputs.nvf.lib.neovimConfiguration { inherit pkgs; }; in config.{{ .Option }}"
+        };
+      };
     in {
       default = pkgs.mkShell {
         packages = with pkgs; [
@@ -74,6 +99,10 @@
           nurl
           treefmtEval.config.build.wrapper
         ];
+
+        shellHook = ''
+          ln --force -s ${optnixConfig} optnix.toml
+        '';
       };
     });
   };
