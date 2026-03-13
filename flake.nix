@@ -144,13 +144,18 @@
     in {
       default = pkgs.mkShell {
         packages = with pkgs; [
+          deadnix
           nix-init
           nurl
+          prek
+          statix
+          stylua
           treefmtEval.config.build.wrapper
         ];
 
         shellHook = ''
           ln --force -s ${optnixConfig} optnix.toml
+          prek install
         '';
       };
     });

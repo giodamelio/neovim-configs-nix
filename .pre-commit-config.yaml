@@ -1,0 +1,32 @@
+repos:
+  - repo: local
+    hooks:
+      - id: treefmt
+        name: Format files
+        language: system
+        entry: nix fmt --
+
+      - id: stylua
+        name: Format Lua files
+        language: system
+        entry: stylua
+        files: '\.lua$'
+
+      - id: statix
+        name: Lint Nix files
+        language: system
+        entry: statix check
+        files: '\.nix$'
+        pass_filenames: false
+
+      - id: deadnix
+        name: Find dead Nix code
+        language: system
+        entry: deadnix --fail
+        files: '\.nix$'
+
+      - id: flake-check
+        name: Check flake evaluates
+        language: system
+        entry: nix flake check --no-build
+        pass_filenames: false
