@@ -13,6 +13,7 @@ in {
     globals.rustaceanvim = {
       server.settings."rust-analyzer".check.command = "clippy";
     };
+
     # Trouble for diagnostics
     lsp.trouble.enable = true;
 

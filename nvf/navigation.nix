@@ -24,29 +24,49 @@ in {
         package = pkgs.vimPlugins.grapple-nvim;
         cmd = ["Grapple"];
         keys = [
+          # Tag management
           {
             mode = "n";
-            key = "<leader><leader><Tab>m";
-            action = "<cmd>lua require('grapple').toggle()<cr>";
-            desc = "Grapple toggle tag";
+            key = "<leader><leader>a";
+            action = "<cmd>lua require('grapple').tag()<cr>";
+            desc = "Grapple add tag";
           }
           {
             mode = "n";
-            key = "<leader><leader><Tab>M";
+            key = "<leader><leader>d";
+            action = "<cmd>lua require('grapple').untag()<cr>";
+            desc = "Grapple remove tag";
+          }
+          {
+            mode = "n";
+            key = "<leader><leader><Tab>";
             action = "<cmd>lua require('grapple').toggle_tags()<cr>";
-            desc = "Grapple open tags";
+            desc = "Grapple tags";
+          }
+          # Quick select by index
+          {
+            mode = "n";
+            key = "<leader><leader>1";
+            action = "<cmd>lua require('grapple').select({ index = 1 })<cr>";
+            desc = "Grapple 1";
           }
           {
             mode = "n";
-            key = "<leader><leader><Tab>n";
-            action = "<cmd>lua require('grapple').cycle_tags('next')<cr>";
-            desc = "Grapple next";
+            key = "<leader><leader>2";
+            action = "<cmd>lua require('grapple').select({ index = 2 })<cr>";
+            desc = "Grapple 2";
           }
           {
             mode = "n";
-            key = "<leader><leader><Tab>p";
-            action = "<cmd>lua require('grapple').cycle_tags('prev')<cr>";
-            desc = "Grapple prev";
+            key = "<leader><leader>3";
+            action = "<cmd>lua require('grapple').select({ index = 3 })<cr>";
+            desc = "Grapple 3";
+          }
+          {
+            mode = "n";
+            key = "<leader><leader>4";
+            action = "<cmd>lua require('grapple').select({ index = 4 })<cr>";
+            desc = "Grapple 4";
           }
         ];
         setupModule = "grapple";
@@ -133,15 +153,6 @@ in {
       (nmapLua "<leader><leader>j" "require('smart-splits').swap_buf_down()" "Swap buffer down")
       (nmapLua "<leader><leader>k" "require('smart-splits').swap_buf_up()" "Swap buffer up")
       (nmapLua "<leader><leader>l" "require('smart-splits').swap_buf_right()" "Swap buffer right")
-
-      # Grapple
-      (nmapLua "<leader><leader><Tab>" "require('grapple').toggle_tags()" "Grapple tags")
-      (nmapLua "<leader><leader>a" "require('grapple').tag()" "Grapple add")
-      (nmapLua "<leader><leader>d" "require('grapple').untag()" "Grapple remove")
-      (nmapLua "<leader><leader>1" "require('grapple').select({ index = 1 })" "Grapple 1")
-      (nmapLua "<leader><leader>2" "require('grapple').select({ index = 2 })" "Grapple 2")
-      (nmapLua "<leader><leader>3" "require('grapple').select({ index = 3 })" "Grapple 3")
-      (nmapLua "<leader><leader>4" "require('grapple').select({ index = 4 })" "Grapple 4")
     ];
   };
 }
