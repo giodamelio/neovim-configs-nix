@@ -1,12 +1,12 @@
 # neovim-configs-nix
 
-Nix-managed Neovim configuration with modular Lua architecture and 80+ plugins.
+Nix-managed Neovim configuration built on [NVF](https://github.com/notashelf/nvf).
 
 ## Variants
 
 | Variant | Description | Use Case |
 |---------|-------------|----------|
-| `full` (default) | All plugins, LSP servers, and treesitter grammars | Daily driver |
+| `default` (full) | All plugins, LSP servers, and treesitter grammars | Daily driver |
 | `light` | Core plugins only, minimal closure | Servers, containers |
 | `micro` | Basic editing + fuzzy finding | Quick edits, minimal footprint |
 
@@ -27,26 +27,36 @@ nix build
 ./result/bin/nvim
 ```
 
+## NixOS / Home Manager / Darwin Integration
+
+Import the modules directly in your system configuration:
+
+```nix
+# flake.nix inputs
+inputs.neovim-configs.url = "github:giodamelio/neovim-configs-nix";
+
+# NixOS module
+{ inputs, ... }: {
+  imports = [ inputs.neovim-configs.nixosModules.${system}.full ];
+}
+
+# Home Manager module
+{ inputs, ... }: {
+  imports = [ inputs.neovim-configs.homeManagerModules.${system}.full ];
+}
+
+# Darwin module
+{ inputs, ... }: {
+  imports = [ inputs.neovim-configs.darwinModules.${system}.full ];
+}
+```
+
 ## Platforms
 
 - x86_64-linux
 - aarch64-linux
 - x86_64-darwin
 - aarch64-darwin
-
-## Structure
-
-```
-flake.nix          # Entry point, variant exports
-mkNeovim.nix       # Shared builder function
-plugins.nix        # Custom plugins not in nixpkgs
-variants/          # Variant definitions (full, light, micro)
-lua/               # Lua configuration modules
-  basic.lua        # Core vim options
-  lsp.lua          # LSP and completion setup
-  treesitter.lua   # Treesitter configuration
-  plugins/         # Per-plugin configuration files
-```
 
 ## License
 

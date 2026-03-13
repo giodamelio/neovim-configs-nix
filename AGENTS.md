@@ -1,10 +1,10 @@
-# CLAUDE.md
+# AGENTS.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
 
-Nix-managed Neovim configuration using **lazy.nvim** for plugin management. Plugins are installed via Nix but managed at runtime by lazy.nvim using `dir` paths to the Nix store. Supports multiple platforms (x86_64-linux, aarch64-linux, x86_64-darwin, aarch64-darwin).
+Nix-managed Neovim configuration built on [NVF](https://github.com/notashelf/nvf) (Neovim Flake). NVF provides a module system for configuring Neovim declaratively via Nix. Supports multiple platforms (x86_64-linux, aarch64-linux, x86_64-darwin, aarch64-darwin).
 
 ## Build Commands
 
@@ -29,196 +29,139 @@ Always run `nix fmt` after making edits to format the codebase with treefmt.
 
 ## Architecture
 
-### Nix Layer
+### Flake Structure
 
-- `flake.nix`: Entry point. Imports nixpkgs unstable + unison-lang flake. Exports 3 variants (full, light, micro) + custom vim plugins.
-- `mkNeovim.nix`: Shared builder for full/light variants. Takes a plugin list and `luaDir`, generates `nix-plugins.lua` (maps plugin pnames to Nix store paths), bundles only lazy.nvim via Nix, and sources `lua/init.lua`.
-- `mkNeovimLegacy.nix`: Legacy builder for micro variant (no lazy.nvim).
-- `plugins.nix`: Defines 3 custom plugins not in nixpkgs (gitlinker-nvim, stay-centered-nvim, vim-mint).
-- `variants/full.nix`: All plugins, all LSP servers, all treesitter grammars.
-- `variants/light.nix`: Core plugins only, minimal closure size. No neotest, claude, git plugins, or extra LSP servers.
-- `variants/micro.nix`: Smallest config — just basic editing + fuzzy finding via snacks. Uses legacy builder.
+- `flake.nix`: Entry point. Uses NVF to build 3 variants (full, light, micro). Exports packages, NixOS modules, Home Manager modules, and Darwin modules.
+- `plugins.nix`: Custom vim plugins not in nixpkgs (gitlinker-nvim, stay-centered-nvim, vim-mint, jj-nvim).
+- `treefmt.nix`: Formatter configuration.
 
-### Plugin Loading Flow (full/light variants)
+### NVF Modules (`nvf/`)
 
+NVF uses a module system similar to NixOS. Each file in `nvf/` is a module that can be imported.
+
+**Core modules:**
+- `core.nix`: Shared settings imported by all variants. Sets leader keys, vim options (tabs, numbers, clipboard), colorscheme (tokyonight), universal plugins (which-key, lualine, rainbow-delimiters, mini, comment, etc.).
+- `lib.nix`: Helper functions for keybindings (`nmap`, `nmapLua`, `cmd`, etc.).
+
+**Feature modules:**
+- `snacks.nix`: Snacks.nvim (dashboard, picker, terminal, indent, explorer) + `<leader>f` find keybinds + `<leader>l` LSP picker.
+- `lsp.nix`: LSP servers (lua-ls, nil, nixd, elixir-ls, ts-ls, etc.) + blink.cmp completion + auto-format.
+- `git.nix`: gitsigns + gitlinker + neogit + diffview + `<leader>g` keybinds.
+- `navigation.nix`: oil.nvim (file explorer) + grapple (quick tags) + smart-splits (pane navigation).
+- `treefmt.nix`: Treefmt integration + `<localleader>f` format keybind.
+- `nix.nix`: Nix language support (nil + nixd LSP, nix treesitter).
+- `neotest.nix`: Test runner + adapters + `<leader>t` keybinds.
+- `claude.nix`: Claude Code integration + `<leader>c` keybinds.
+- `extra-langs.nix`: Additional language support (Elixir, Unison, Mint, etc.).
+- `neovide.nix`: Neovide GUI settings.
+
+**Variant modules:**
+- `full.nix`: Imports all feature modules. Daily driver config.
+- `light.nix`: Imports core features only (snacks, lsp, navigation, treefmt, nix). No git, neotest, claude, extra-langs.
+- `micro.nix`: Minimal config. Just snacks picker for fuzzy finding.
+
+### How Variants Work
+
+Each variant is built by `nvf.lib.neovimConfiguration` with different module imports:
+
+```nix
+# In flake.nix
+full = mkVariant {
+  inherit system;
+  modules = [./nvf/core.nix ./nvf/full.nix];
+  extraSpecialArgs.variant = "full";
+};
 ```
-Nix build time:
-  1. mkNeovim.nix generates nix-plugins.lua: vim.g.nix_plugins = { ["plugin.pname"] = "/nix/store/..." }
-  2. Only lazy.nvim is bundled in packpath
-  3. lua/ directory copied to store
 
-Neovim runtime:
-  1. init.vim sources nix-plugins.lua (sets vim.g.nix_plugins)
-  2. init.vim prepends lua config dir to rtp
-  3. init.vim sources lua/init.lua
-  4. lua/init.lua requires basic.lua (core vim settings)
-  5. lua/init.lua calls lazy.setup({ spec = { import = "plugins" } })
-  6. lazy.nvim loads each lua/plugins/*.lua which returns spec table(s)
-  7. Each spec uses nix.spec("pname", { ... }) which sets dir = vim.g.nix_plugins["pname"]
-```
-
-### Lua Structure
-
-- `lua/init.lua`: Entry point. Loads basic.lua, calls lazy.setup(), loads neovide.lua if GUI.
-- `lua/basic.lua`: Core vim options (leader=space, 2-space tabs, relative numbers, clipboard).
-- `lua/neovide.lua`: GUI-specific settings (cursor, scrolling, zoom).
-- `lua/lib/nix.lua`: Helper module providing `nix.spec(pname, spec)` for building lazy specs from Nix store paths.
-- `lua/micro.lua`: Self-contained micro variant config (not loaded by lazy.nvim).
-- `lua/plugins/*.lua`: Each file returns a lazy.nvim spec table (or list of tables).
-
-### Plugin Modules (`lua/plugins/`)
-
-- `colorscheme.lua`: tokyonight (loads first, priority 1000)
-- `icons.lua`: nvim-web-devicons + lspkind.nvim (lazy, loaded as dependencies)
-- `which-key.lua`: which-key.nvim (VeryLazy event)
-- `mini.lua`: mini.icons + mini.ai
-- `luasnip.lua`: luasnip + friendly-snippets
-- `trouble.lua`: trouble.nvim + `<leader>d` diagnostics keybinds
-- `snacks.lua`: dashboard/picker/terminal/indent/notify + `<leader>f` find + `<leader>l` LSP picker + debug helpers + commands
-- `lualine.lua`: Status bar with navic integration
-- `rainbow-delimiters.lua`: Rainbow parentheses
-- `git.lua`: gitsigns + gitlinker + neogit + diffview + `<leader>g` keybinds
-- `oil.lua`: File explorer
-- `other.lua`: Related file navigation + `<leader>o` keybinds
-- `smart-splits.lua`: Pane navigation/resize/swap
-- `grapple.lua`: Quick file tagging + `<leader><leader><Tab>` keybinds
-- `persisted.lua`: Session management
-- `comment.lua`: Code commenting
-- `stay-centered.lua`: Keep cursor centered
-- `neotest.lua`: Test runner + adapters + `<leader>t` keybinds (full only)
-- `elixir.lua`: Elixir-specific tools
-- `claude.lua`: Claude Code integration + `<leader>c` keybinds (full only)
-- `treefmt.lua`: Treefmt commands + `<localleader>f` keybind (no plugin, pure Lua)
-- `misc.lua`: Utility plugins + BdeleteAll/LspCapabilities commands
-- `lsp.lua`: blink.cmp completion + nvim-lspconfig + LSP server configs + auto-format
-- `treesitter.lua`: Treesitter highlighting/indentation
+The variant name is available as `variant` in module args and set as `vim.globals.neovim_variant` for runtime detection.
 
 ## Adding Plugins
 
-### Step 1: Determine the Plugin pname
+### Using NVF Built-in Plugins
 
-The plugin pname is what you'll use in Lua specs. Find it with:
+NVF has built-in support for many plugins. Check [NVF documentation](https://notashelf.github.io/nvf/) for available options.
 
-```bash
-nix eval nixpkgs#vimPlugins.<attr-name>.pname --raw
+Example - enabling a built-in plugin:
+```nix
+# In any nvf/*.nix module
+config.vim = {
+  git.gitsigns.enable = true;
+  utility.snacks-nvim.enable = true;
+  lsp.lspconfig.enable = true;
+};
 ```
 
-Examples:
-- `nix eval nixpkgs#vimPlugins.tokyonight-nvim.pname` → `tokyonight.nvim`
-- `nix eval nixpkgs#vimPlugins.blink-cmp.pname` → `blink.cmp`
-- `nix eval nixpkgs#vimPlugins.nvim-treesitter.pname` → `nvim-treesitter`
+### Using Extra Plugins (not built into NVF)
 
-**Note:** nixpkgs attribute names use dashes (`tokyonight-nvim`) but pnames often use dots (`tokyonight.nvim`). Always check the actual pname.
-
-### Step 2: Add to Nix Variant
-
-In `variants/full.nix` or `variants/light.nix`, add to the `plugins` list:
+For plugins NVF doesn't have built-in support for, use `vim.extraPlugins`:
 
 ```nix
-plugins = with pkgs.vimPlugins; [
-  # Simple plugin
-  my-plugin-nvim
-
-  # Plugin needing name override (e.g., treesitter with grammars)
-  {
-    plugin = (nvim-treesitter.withPlugins (...));
-    name = "nvim-treesitter";  # Explicit pname for Lua lookup
-  }
-];
+# In nvf/core.nix or feature module
+config.vim = {
+  extraPlugins = {
+    stay-centered = {
+      package = vimPlugins.stay-centered-nvim;  # From plugins.nix or nixpkgs
+      setup = "require('stay-centered').setup {}";
+    };
+  };
+};
 ```
-
-### Step 3: Create Lua Spec
-
-Create `lua/plugins/<name>.lua`:
-
-```lua
-local nix = require("lib.nix")
-return {
-  nix.spec("plugin.pname", {
-    -- lazy.nvim spec options
-    event = "VeryLazy",  -- or cmd, ft, keys for lazy loading
-    opts = { ... },      -- passed to setup()
-    -- OR for complex config:
-    config = function()
-      require("plugin").setup({ ... })
-      -- keymaps, autocmds, etc.
-    end,
-    dependencies = { "other-plugin.pname" },  -- use pnames here too
-  }),
-}
-```
-
-### Plugin pname Reference
-
-Common pname patterns (check with `nix eval` if unsure):
-
-| nixpkgs attr | pname |
-|--------------|-------|
-| `tokyonight-nvim` | `tokyonight.nvim` |
-| `blink-cmp` | `blink.cmp` |
-| `mini-icons` | `mini.icons` |
-| `nvim-treesitter` | `nvim-treesitter` |
-| `nvim-lspconfig` | `nvim-lspconfig` |
-| `friendly-snippets` | `friendly-snippets` |
-| `luasnip` | `luasnip` |
-| `rainbow-delimiters-nvim` | `rainbow-delimiters.nvim` |
-
-### Variant-Specific Plugins
-
-Plugins only in certain variants (e.g., `claudecode.nvim` in full only) automatically get disabled in other variants. The `nix.spec()` helper returns an empty table when the plugin isn't in `vim.g.nix_plugins`, which lazy.nvim ignores.
 
 ### Custom Plugins (GitHub)
 
-For plugins not in nixpkgs, use `nurl` to generate the fetch expression:
+For plugins not in nixpkgs, add to `plugins.nix`:
 
 ```bash
+# Generate fetch expression
 nurl https://github.com/owner/repo.nvim
 ```
 
-Then update these 4 files:
+```nix
+# plugins.nix
+{pkgs}: {
+  my-plugin = pkgs.vimUtils.buildVimPlugin {
+    pname = "my-plugin.nvim";
+    version = "YYYY-MM-DD";
+    src = pkgs.fetchFromGitHub {
+      owner = "owner";
+      repo = "my-plugin.nvim";
+      rev = "...";
+      hash = "sha256-...";
+    };
+    meta.homepage = "https://github.com/owner/my-plugin.nvim";
+  };
+}
+```
 
-1. **`plugins.nix`** - Add the plugin definition:
-   ```nix
-   plugin-name = pkgs.vimUtils.buildVimPlugin {
-     pname = "plugin.nvim";
-     version = "YYYY-MM-DD";
-     src = pkgs.fetchFromGitHub {
-       owner = "owner";
-       repo = "plugin.nvim";
-       rev = "...";
-       hash = "sha256-...";
-     };
-     meta.homepage = "https://github.com/owner/plugin.nvim";
-   };
-   ```
+Then use in NVF module:
+```nix
+{vimPlugins, ...}: {
+  config.vim.extraPlugins.my-plugin = {
+    package = vimPlugins.my-plugin;
+    setup = "require('my-plugin').setup {}";
+  };
+}
+```
 
-2. **`variants/full.nix`** (or other variant) - Add to plugins list:
-   ```nix
-   vimPlugins.plugin-name
-   ```
+### Adding Keybindings
 
-3. **`lua/plugins/<name>.lua`** - Create config file:
-   ```lua
-   local nix = require("lib.nix")
-   return {
-     nix.spec("plugin.nvim", {
-       config = true,  -- if plugin needs setup(), check plugin docs
-     }),
-   }
-   ```
+Use helpers from `lib.nix`:
 
-4. **`flake.nix`** - Export the plugin:
-   ```nix
-   "vimPlugins.plugin-name" = vimPlugins.plugin-name;
-   ```
-
-Naming: attribute names use hyphens (`jj-nvim`), pname matches repo (`jj.nvim`).
+```nix
+{...}: let
+  inherit (import ./lib.nix) nmap nmapLua cmd;
+in {
+  config.vim.keymaps = [
+    (nmap "<leader>x" (cmd "SomeCommand") "Description")
+    (nmapLua "<leader>y" "require('plugin').action()" "Description")
+  ];
+}
+```
 
 ## Conventions
 
-- Each plugin gets its own file in `lua/plugins/` returning a lazy.nvim spec.
-- Tightly related plugins (e.g., gitsigns + gitlinker + neogit) can share a file, returning a list of specs.
-- Keybindings use which-key for discoverability. Register groups in the plugin's config function.
-- LSP servers configured with `vim.lsp.config()` and enabled with `vim.lsp.enable()` in `lsp.lua`.
-- Lazy loading: prefer `event`, `cmd`, `ft`, or `keys` triggers over `lazy = false`.
-- For pure Lua code without a plugin (like treefmt.lua), return `{}` and run code at file load time.
+- Each feature domain gets its own module in `nvf/` (git, lsp, navigation, etc.).
+- Keybindings use which-key groups for discoverability.
+- Variant-specific features check `variant` arg or use conditional imports.
+- Custom plugins go in `plugins.nix`, referenced via `vimPlugins` arg.
+- Lua code can be inlined with `setup` strings or placed in `nvf/lua/` and loaded.
