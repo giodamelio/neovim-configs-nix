@@ -9,6 +9,10 @@
   isFullVariant = variant == "full";
 in {
   config.vim = {
+    # Configure rust-analyzer to use clippy
+    globals.rustaceanvim = {
+      server.settings."rust-analyzer".check.command = "clippy";
+    };
     # Trouble for diagnostics
     lsp.trouble.enable = true;
 
@@ -164,6 +168,16 @@ in {
       (nmapLua "<leader>lt" (snacksPicker "lsp_type_definitions") "Show type definition")
     ];
 
+    # Elixir tools plugin
+    lazy.plugins."elixir-tools.nvim" = {
+      package = pkgs.vimPlugins.elixir-tools-nvim;
+      ft = ["elixir" "eelixir" "heex" "surface"];
+      setupModule = "elixir";
+      setupOpts = {
+        nextls.enable = false; # Using custom LSP config
+        elixirls.enable = false; # Using custom LSP config
+      };
+    };
     # Custom LSP configurations via luaConfigRC
     luaConfigRC.custom-lsp =
       builtins.readFile ./lua/custom-lsp.lua

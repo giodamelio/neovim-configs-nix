@@ -41,16 +41,6 @@
         package = pkgs.vimPlugins.vim-ormolu;
         ft = ["haskell" "lhaskell"];
       };
-
-      "elixir-tools.nvim" = {
-        package = pkgs.vimPlugins.elixir-tools-nvim;
-        ft = ["elixir" "eelixir" "heex" "surface"];
-        setupModule = "elixir";
-        setupOpts = {
-          nextls.enable = false;
-          elixirls.enable = false;
-        };
-      };
     };
   };
 }

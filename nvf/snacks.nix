@@ -112,6 +112,8 @@ in {
       };
     };
 
+    # Which-key group for git pickers
+    binds.whichKey.register."<leader>fG" = "Git";
     keymaps = [
       # === Snacks Picker: Find ===
       (nmapLua "<leader>f?" (snacksPicker "help") "Find help tags")
