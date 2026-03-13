@@ -1,0 +1,41 @@
+# Configuration file for `prek`, a git hook framework written in Rust.
+# See https://prek.j178.dev for more information.
+#:schema https://www.schemastore.org/prek.json
+
+[[repos]]
+repo = "local"
+
+[[repos.hooks]]
+id = "treefmt"
+name = "Format files"
+language = "system"
+entry = "nix fmt --"
+
+[[repos.hooks]]
+id = "stylua"
+name = "Format Lua files"
+language = "system"
+entry = "stylua"
+files = '\.lua$'
+
+[[repos.hooks]]
+id = "statix"
+name = "Lint Nix files"
+language = "system"
+entry = "statix check"
+files = '\.nix$'
+pass_filenames = false
+
+[[repos.hooks]]
+id = "deadnix"
+name = "Find dead Nix code"
+language = "system"
+entry = "deadnix --fail"
+files = '\.nix$'
+
+[[repos.hooks]]
+id = "flake-check"
+name = "Check flake evaluates"
+language = "system"
+entry = "nix flake check --no-build"
+pass_filenames = false
