@@ -20,6 +20,10 @@ in {
     # Format on save (replaces manual auto-format.lua)
     lsp.formatOnSave = true;
     lsp.harper-ls.enable = true;
+
+    # Restrict harper-ls to prose files only (not code comments)
+    lsp.servers.harper-ls.filetypes = lib.mkForce ["markdown" "text" "gitcommit" "mail"];
+
     lsp.lightbulb.enable = true;
 
     # Disable NVF's default LSP keybinds (we define our own below)
@@ -152,14 +156,8 @@ in {
       (nmap "<leader>de" (cmd "Trouble lsp_definitions toggle") "Definitions")
       (nmap "<leader>di" (cmd "Trouble lsp_implementations toggle") "Implementations")
       (nmap "<leader>dr" (cmd "Trouble lsp_references toggle") "References")
-      (
-        nmapLua "<leader>dn" "require('trouble').next({ skip_groups = true, jump = true })"
-        "Next diagnostic"
-      )
-      (
-        nmapLua "<leader>dp" "require('trouble').prev({ skip_groups = true, jump = true })"
-        "Previous diagnostic"
-      )
+      (nmapLua "<leader>dn" "vim.diagnostic.goto_next()" "Next diagnostic")
+      (nmapLua "<leader>dp" "vim.diagnostic.goto_prev()" "Previous diagnostic")
 
       # === Snacks Picker: LSP ===
       (nmapLua "<leader>lD" (snacksPicker "lsp_definitions") "Show definitions")
