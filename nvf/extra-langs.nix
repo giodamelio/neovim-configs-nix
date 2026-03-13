@@ -9,7 +9,6 @@
   config.vim = {
     # Eager plugins
     startPlugins = with pkgs.vimPlugins; [
-      blink-cmp-git
       firenvim
     ];
 
