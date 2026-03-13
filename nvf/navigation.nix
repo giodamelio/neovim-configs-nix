@@ -6,6 +6,20 @@ in {
     # Smart splits for pane navigation
     utility.smart-splits.enable = true;
 
+    # Override smart-splits multiplexer auto-detection to only use zellij/tmux.
+    # Without this, smart-splits detects WezTerm via $TERM_PROGRAM and tries to
+    # initialize its WezTerm integration, which writes to /dev/fd/2. This fails
+    # when Neovim is launched from contexts where stderr isn't a normal fd (e.g., OMP).
+    luaConfigRC.smart-splits-mux-check = ''
+      if vim.env.ZELLIJ then
+        vim.g.smart_splits_multiplexer_integration = "zellij"
+      elseif vim.env.TMUX then
+        vim.g.smart_splits_multiplexer_integration = "tmux"
+      else
+        vim.g.smart_splits_multiplexer_integration = false
+      end
+    '';
+
     # Oil file explorer
     utility.oil-nvim = {
       enable = true;
