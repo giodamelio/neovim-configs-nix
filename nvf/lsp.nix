@@ -67,6 +67,8 @@ in {
     # NVF Language modules
     languages =
       {
+        enableTreesitter = true;
+
         # Nix
         nix = {
           enable = true;
@@ -131,6 +133,12 @@ in {
 
         # Elixir
         elixir = {
+          enable = true;
+          lsp.enable = true;
+        };
+
+        # Nushell
+        nu = {
           enable = true;
           lsp.enable = true;
         };
