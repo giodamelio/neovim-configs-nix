@@ -87,7 +87,6 @@ in {
     comments.comment-nvim.enable = true;
     visuals.rainbow-delimiters.enable = true;
     visuals.fidget-nvim.enable = true;
-    notify.nvim-notify.enable = true;
     statusline.lualine = {
       enable = true;
       # NVF lualine has inline LSP progress, no need for lualine-lsp-progress plugin

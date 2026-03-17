@@ -108,6 +108,7 @@ in {
           };
         };
         explorer.enable = true;
+        notifier.enable = true;
         image.enable = isFullVariant;
       };
     };
