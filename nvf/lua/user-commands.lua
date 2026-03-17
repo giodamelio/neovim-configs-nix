@@ -1,14 +1,17 @@
 -- User commands for core functionality.
 
 -- BdeleteAll: close all buffers except current
-vim.api.nvim_create_user_command("BdeleteAll", function()
-	local current = vim.api.nvim_get_current_buf()
-	for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-		if buf ~= current and vim.api.nvim_buf_is_loaded(buf) then
-			vim.api.nvim_buf_delete(buf, { force = false })
-		end
-	end
+vim.api.nvim_create_user_command("Bdelete", function()
+	Snacks.bufdelete.delete()
+end, { desc = "Delete the current buffer" })
+
+vim.api.nvim_create_user_command("BdeleteOther", function()
+	Snacks.bufdelete.other()
 end, { desc = "Delete all buffers except current" })
+
+vim.api.nvim_create_user_command("BdeleteAll", function()
+	Snacks.bufdelete.all()
+end, { desc = "Delete all buffers" })
 
 -- LspCapabilities: show LSP server capabilities in snacks window
 vim.api.nvim_create_user_command("LspCapabilities", function()
