@@ -63,6 +63,7 @@ in {
 
     # Core enables
     treesitter.enable = lib.mkDefault true;
+    treesitter.fold = true;
     lsp.enable = lib.mkDefault true;
 
     # Which-key
