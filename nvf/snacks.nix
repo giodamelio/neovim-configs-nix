@@ -12,7 +12,6 @@ in {
       enable = true;
       setupOpts = {
         dashboard = {
-          enable = true;
           preset = {
             keys = [
               {
@@ -98,17 +97,17 @@ in {
           ];
           pane_gap = 4;
         };
-        picker = {
-          enable = true;
-        };
+        picker = {};
         indent = {
-          enable = true;
           animate = {
             enabled = false;
           };
         };
-        explorer.enable = true;
-        notifier.enable = true;
+        explorer = {};
+        statuscolumn = {};
+        gh = {};
+        bufdelete = {};
+        notifier = {};
         image.enable = isFullVariant;
       };
     };

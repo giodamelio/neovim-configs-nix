@@ -158,6 +158,7 @@ in {
       (nmapLua "<leader>ll" "vim.lsp.buf.code_action()" "Code actions")
       (nmapLua "<leader>lf" "vim.lsp.buf.format()" "Format buffer")
       (nmapLua "<leader>lR" "vim.lsp.buf.rename()" "Rename symbol")
+
       # === Trouble Diagnostics ===
       (nmap "<leader>dd" (cmd "Trouble diagnostics toggle") "Document diagnostics")
       (nmap "<leader>dl" (cmd "Trouble lsp toggle") "LSP toggle")
