@@ -115,6 +115,7 @@ in {
 
     # Which-key group for git pickers
     binds.whichKey.register."<leader>fG" = "Git";
+    binds.whichKey.register."<leader>fH" = "Github";
     keymaps = [
       # === Snacks Picker: Find ===
       (nmapLua "<leader>f?" (snacksPicker "help") "Find help tags")
@@ -135,6 +136,7 @@ in {
       (nmapLua "<leader>fp" (snacksPicker "pickers") "Find pickers")
       (nmapLua "<leader>fn" (snacksPicker "notifications") "Find notifications")
       (nmapLua "<leader>fF" (snacksPicker "smart") "Smart Finder")
+      (nmapLua "<leader>f:" (snacksPicker "commands") "Find Commands")
       (nmapLua "<leader>fq" (snacksPicker "qflist") "Quickfix List")
 
       # === Snacks Picker: Git ===
@@ -145,6 +147,12 @@ in {
       (nmapLua "<leader>fGS" (snacksPicker "git_stash") "Find Git stash")
       (nmapLua "<leader>fGd" (snacksPicker "git_diff") "Find Git diff")
       (nmapLua "<leader>fGf" (snacksPicker "git_log_file") "Find Git log files")
+
+      # === Snacks Picker: Github ===
+      (nmapLua "<leader>fHi" (snacksPicker "gh_issue") "Github Issues (open)")
+      (nmapLua "<leader>fHI" (snacksPickerOpts "gh_issue" "{ state = 'all' }") "Github Issues (all)")
+      (nmapLua "<leader>fHp" (snacksPicker "gh_pr") "Github Pull Requests (open)")
+      (nmapLua "<leader>fHP" (snacksPickerOpts "gh_pr" "{ state = 'all' }") "Github Pull Requests (all)")
 
       # === Snacks: Terminal & Explorer ===
       (mapLua ["n" "t"] "<leader>/" (snacks "terminal.toggle()") "Toggle terminal")
