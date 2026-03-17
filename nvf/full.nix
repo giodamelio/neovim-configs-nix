@@ -11,6 +11,7 @@
     ./claude.nix
     ./extra-langs.nix
     ./neovide.nix
+    ./quickfix.nix
   ];
 
   config.vim = {

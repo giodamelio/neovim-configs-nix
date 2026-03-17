@@ -135,6 +135,7 @@ in {
       (nmapLua "<leader>fp" (snacksPicker "pickers") "Find pickers")
       (nmapLua "<leader>fn" (snacksPicker "notifications") "Find notifications")
       (nmapLua "<leader>fF" (snacksPicker "smart") "Smart Finder")
+      (nmapLua "<leader>fq" (snacksPicker "qflist") "Quickfix List")
 
       # === Snacks Picker: Git ===
       (nmapLua "<leader>fGb" (snacksPicker "git_branches") "Find Git branches")

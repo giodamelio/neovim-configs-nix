@@ -7,6 +7,7 @@
     ./treefmt.nix
     ./nix.nix
     ./neovide.nix
+    ./quickfix.nix
   ];
 
   config.vim = {
