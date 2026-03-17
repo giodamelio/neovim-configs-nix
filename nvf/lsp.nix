@@ -42,6 +42,7 @@ in {
       nextDiagnostic = null;
       previousDiagnostic = null;
       openDiagnosticFloat = null;
+      signatureHelp = null;
     };
 
     # Autocomplete with blink.cmp
