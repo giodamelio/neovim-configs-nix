@@ -4,7 +4,7 @@
   variant ? "full",
   ...
 }: let
-  inherit (import ./lib.nix) nmapLua mapLua snacks snacksPicker snacksPickerOpts;
+  inherit (import ./lib.nix) cmd nmap nmapLua mapLua snacks snacksPicker snacksPickerOpts;
   isFullVariant = variant == "full";
 in {
   config.vim = {
@@ -46,12 +46,6 @@ in {
               }
               {
                 icon = " ";
-                key = "s";
-                desc = "Restore Session";
-                section = "session";
-              }
-              {
-                icon = " ";
                 key = "q";
                 desc = "Quit";
                 action = ":qa";
@@ -70,6 +64,14 @@ in {
               icon = " ";
               title = "Recent Files";
               section = "recent_files";
+              indent = 2;
+              padding = 1;
+            }
+            {
+              pane = 2;
+              icon = " ";
+              title = "Sessions";
+              section = "persisted_dashboard_sessions";
               indent = 2;
               padding = 1;
             }
@@ -137,6 +139,7 @@ in {
       (nmapLua "<leader>fF" (snacksPicker "smart") "Smart Finder")
       (nmapLua "<leader>f:" (snacksPicker "commands") "Find Commands")
       (nmapLua "<leader>fq" (snacksPicker "qflist") "Quickfix List")
+      (nmap "<leader>fs" (cmd "PersistedPickerLoad") "Find session")
 
       # === Snacks Picker: Git ===
       (nmapLua "<leader>fGb" (snacksPicker "git_branches") "Find Git branches")

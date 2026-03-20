@@ -114,7 +114,7 @@ in {
         setupModule = "persisted";
         setupOpts = {
           autostart = true;
-          autoload = true;
+          autoload = false;
         };
       };
 
@@ -150,6 +150,7 @@ in {
     luaConfigRC = {
       debug-helpers = builtins.readFile ./lua/debug-helpers.lua;
       user-commands = builtins.readFile ./lua/user-commands.lua;
+      persisted-picker = builtins.readFile ./lua/persisted-picker.lua;
     };
   };
 }
