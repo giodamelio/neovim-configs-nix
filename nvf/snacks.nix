@@ -46,6 +46,12 @@ in {
               }
               {
                 icon = " ";
+                key = "s";
+                desc = "Restore Session";
+                action = ":lua require('persisted').load()";
+              }
+              {
+                icon = " ";
                 key = "q";
                 desc = "Quit";
                 action = ":qa";
