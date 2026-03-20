@@ -10,6 +10,7 @@ in {
     git = {
       gitsigns.enable = true;
       neogit.enable = true;
+      hunk-nvim.enable = true;
       gitlinker-nvim = {
         enable = true;
         setupOpts = {

@@ -75,11 +75,31 @@ full = mkVariant {
 
 The variant name is available as `variant` in module args and set as `vim.globals.neovim_variant` for runtime detection.
 
+## Searching Nix Options with optnix
+
+`optnix` is available in this repo for searching NVF, NixOS, and home-manager options. The default scope is `nvf`.
+
+```bash
+# Fuzzy search — returns similar_options when no exact match
+optnix --non-interactive --json vim.git.hunk
+
+# Exact option lookup
+optnix --non-interactive --json vim.git.gitsigns.enable
+
+# Search a different scope (nixos, home-manager)
+optnix --non-interactive --json -s nixos services.nginx.enable
+
+# List available scopes
+optnix --list-scopes
+```
+
 ## Adding Plugins
 
-### Using NVF Built-in Plugins
+**IMPORTANT: Before adding ANY plugin, you MUST first search NVF's options with `optnix` to check if the plugin already has built-in support.** NVF has built-in modules for a large number of plugins. Adding a plugin manually via `extraPlugins` or `plugins.nix` when NVF already supports it is wrong — it bypasses NVF's configuration, causes conflicts, and misses out on NVF's integration. Always run `optnix --non-interactive --json vim.<category>.<plugin-name>` first. Only proceed with manual installation if optnix confirms no match exists.
 
-NVF has built-in support for many plugins. Check [NVF documentation](https://notashelf.github.io/nvf/) for available options.
+### Using NVF Built-in Plugins (preferred)
+
+NVF has built-in support for many plugins. Use `optnix` to discover available options.
 
 Example - enabling a built-in plugin:
 ```nix
@@ -92,6 +112,8 @@ config.vim = {
 ```
 
 ### Using Extra Plugins (not built into NVF)
+
+**Only use this after confirming with `optnix` that NVF has no built-in support for the plugin.**
 
 For plugins NVF doesn't have built-in support for, use `vim.extraPlugins`:
 
