@@ -86,7 +86,10 @@ in {
 
     # UI plugins
     comments.comment-nvim.enable = true;
-    visuals.rainbow-delimiters.enable = true;
+    visuals.rainbow-delimiters = {
+      enable = true;
+      setupOpts.blacklist = ["snacks_dashboard"];
+    };
     visuals.fidget-nvim.enable = true;
     statusline.lualine = {
       enable = true;
