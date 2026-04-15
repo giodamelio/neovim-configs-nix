@@ -86,9 +86,20 @@ in {
 
     # UI plugins
     comments.comment-nvim.enable = true;
-    visuals.rainbow-delimiters = {
-      enable = true;
-      setupOpts.blacklist = ["snacks_dashboard"];
+    visuals.rainbow-delimiters.enable = true;
+
+    # Override rainbow-delimiters to v0.12.0 which fixes nil parser crash on Neovim 0.12+
+    pluginOverrides.rainbow-delimiters-nvim = pkgs.vimUtils.buildVimPlugin {
+      pname = "rainbow-delimiters.nvim";
+      version = "0.12.0";
+      src = pkgs.fetchFromGitHub {
+        owner = "HiPhish";
+        repo = "rainbow-delimiters.nvim";
+        tag = "v0.12.0";
+        hash = "sha256-q4cBvF8d5h+BM1LTm5aq02OBVmwSUb9rC1smHlxbRzg=";
+      };
+      nvimRequireCheck = "rainbow-delimiters";
+      meta.homepage = "https://github.com/HiPhish/rainbow-delimiters.nvim";
     };
     visuals.fidget-nvim.enable = true;
     statusline.lualine = {
