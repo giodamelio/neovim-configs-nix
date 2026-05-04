@@ -105,6 +105,7 @@
       pkgs.writeText "docker-nvim-${variantName}" ''
         #!/usr/bin/env bash
         set -euo pipefail
+        exec </dev/tty
         exec docker run \
           --interactive \
           --tty \
