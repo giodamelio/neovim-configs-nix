@@ -19,7 +19,7 @@ in {
 
     # Format on save (replaces manual auto-format.lua)
     lsp.formatOnSave = true;
-    lsp.harper-ls.enable = true;
+    lsp.presets.harper.enable = true;
 
     # Restrict harper-ls to prose files only (not code comments)
     lsp.servers.harper-ls.filetypes = lib.mkForce ["markdown" "text" "gitcommit" "mail"];
@@ -115,7 +115,7 @@ in {
         };
 
         # TypeScript/JavaScript
-        ts = {
+        typescript = {
           enable = true;
           lsp.enable = true;
         };
