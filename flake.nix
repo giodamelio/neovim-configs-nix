@@ -80,7 +80,7 @@
           Env = [
             "TERM=xterm-256color"
             "LANG=C.UTF-8"
-            "HOME=/root"
+            "HOME=/home/nvim"
             "EDITOR=nvim"
           ];
           WorkingDir = "/workspace";
@@ -92,9 +92,11 @@
         };
 
         fakeRootCommands = ''
-          mkdir -p ./root
+          mkdir -p ./home/nvim
+          chmod 777 ./home/nvim
           mkdir -p ./workspace
           mkdir -p ./tmp
+          chmod 1777 ./tmp
         '';
       };
 
