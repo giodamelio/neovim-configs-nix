@@ -107,17 +107,33 @@
       pkgs.writeText "docker-nvim-${variantName}" ''
         #!/usr/bin/env bash
         set -euo pipefail
-        exec </dev/tty
-        exec docker run \
-          --interactive \
-          --tty \
-          --rm \
-          --volume "$(pwd):/workspace" \
-          --workdir /workspace \
-          --env "TERM=''${TERM:-xterm-256color}" \
-          --user "$(id -u):$(id -g)" \
-          "${imageName}:latest" \
-          "$@"
+
+        main() {
+          local runtime=""
+          if command -v podman &>/dev/null; then
+            runtime="podman"
+          elif command -v docker &>/dev/null; then
+            runtime="docker"
+          else
+            echo "Error: Neither podman nor docker found. Please install one of them." >&2
+            echo "  https://docs.docker.com/get-docker/" >&2
+            echo "  https://podman.io/getting-started/installation" >&2
+            exit 1
+          fi
+
+          exec "$runtime" run \
+            --interactive \
+            --tty \
+            --rm \
+            --volume "$(pwd):/workspace" \
+            --workdir /workspace \
+            --env "TERM=''${TERM:-xterm-256color}" \
+            --user "$(id -u):$(id -g)" \
+            "${imageName}:latest" \
+            "$@" </dev/tty
+        }
+
+        main "$@"
       '';
 
     # Build the GitHub Pages site from portable scripts
