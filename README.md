@@ -33,11 +33,11 @@ Run with Docker (no Nix required):
 
 ```bash
 # Default (light variant)
-curl -fsSL https://giovim.gio.ninja | bash
+curl -fsSL https://nvim.giodamelio.com | bash
 
 # Full or micro variant
-curl -fsSL https://giovim.gio.ninja/full | bash
-curl -fsSL https://giovim.gio.ninja/micro | bash
+curl -fsSL https://nvim.giodamelio.com/full | bash
+curl -fsSL https://nvim.giodamelio.com/micro | bash
 ```
 
 Or run the Docker images directly:
