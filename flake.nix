@@ -125,6 +125,7 @@
             --interactive \
             --tty \
             --rm \
+            --pull always \
             --volume "$(pwd):/workspace" \
             --workdir /workspace \
             --env "TERM=''${TERM:-xterm-256color}" \
