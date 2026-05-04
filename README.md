@@ -27,6 +27,27 @@ nix build
 ./result/bin/nvim
 ```
 
+## Docker
+
+Run with Docker (no Nix required):
+
+```bash
+# Default (light variant)
+curl -fsSL https://giovim.gio.ninja | bash
+
+# Full or micro variant
+curl -fsSL https://giovim.gio.ninja/full | bash
+curl -fsSL https://giovim.gio.ninja/micro | bash
+```
+
+Or run the Docker images directly:
+
+```bash
+docker run -it --rm -v $(pwd):/workspace ghcr.io/giodamelio/neovim-configs-nix-light
+docker run -it --rm -v $(pwd):/workspace ghcr.io/giodamelio/neovim-configs-nix-full
+docker run -it --rm -v $(pwd):/workspace ghcr.io/giodamelio/neovim-configs-nix-micro
+```
+
 ## NixOS / Home Manager / Darwin Integration
 
 Import the modules directly in your system configuration:

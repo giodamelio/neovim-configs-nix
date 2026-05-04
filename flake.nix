@@ -56,6 +56,77 @@
       light = mkVariant system "light";
       micro = mkVariant system "micro";
     };
+
+    # Build a Docker image for a variant
+    mkDockerImage = system: variantName: neovimPackage: let
+      pkgs = pkgsFor system;
+    in
+      pkgs.dockerTools.buildLayeredImage {
+        name = "ghcr.io/giodamelio/neovim-configs-nix-${variantName}";
+        tag = "latest";
+        maxLayers = 125;
+
+        contents = with pkgs; [
+          neovimPackage
+          bashInteractive
+          coreutils
+          git
+          ripgrep
+          fd
+          ncurses
+        ];
+
+        config = {
+          Env = [
+            "TERM=xterm-256color"
+            "LANG=C.UTF-8"
+            "HOME=/root"
+            "EDITOR=nvim"
+          ];
+          WorkingDir = "/workspace";
+          Entrypoint = ["${neovimPackage}/bin/nvim"];
+          Cmd = [];
+          Volumes = {
+            "/workspace" = {};
+          };
+        };
+
+        fakeRootCommands = ''
+          mkdir -p ./root
+          mkdir -p ./workspace
+          mkdir -p ./tmp
+        '';
+      };
+
+    # Build a portable runner script for a variant
+    mkRunnerScript = pkgs: variantName: let
+      imageName = "ghcr.io/giodamelio/neovim-configs-nix-${variantName}";
+    in
+      pkgs.writeText "docker-nvim-${variantName}" ''
+        #!/usr/bin/env bash
+        set -euo pipefail
+        exec docker run \
+          --interactive \
+          --tty \
+          --rm \
+          --volume "$(pwd):/workspace" \
+          --workdir /workspace \
+          --env "TERM=''${TERM:-xterm-256color}" \
+          --user "$(id -u):$(id -g)" \
+          "${imageName}:latest" \
+          "$@"
+      '';
+
+    # Build the GitHub Pages site from portable scripts
+    mkPages = system: let
+      pkgs = pkgsFor system;
+    in
+      pkgs.runCommand "giovim-pages" {} ''
+        mkdir -p $out
+        cp ${mkRunnerScript pkgs "light"} $out/index.html
+        cp ${mkRunnerScript pkgs "full"} $out/full
+        cp ${mkRunnerScript pkgs "micro"} $out/micro
+      '';
   in {
     # Packages - self-contained Neovim binaries
     packages = forAllSystems (system: let
@@ -71,6 +142,14 @@
       "vimPlugins.stay-centered-nvim" = vimPlugins.stay-centered-nvim;
       "vimPlugins.vim-mint" = vimPlugins.vim-mint;
       "vimPlugins.jj-nvim" = vimPlugins.jj-nvim;
+
+      # Docker images
+      docker-full = mkDockerImage system "full" variants.full.neovim;
+      docker-light = mkDockerImage system "light" variants.light.neovim;
+      docker-micro = mkDockerImage system "micro" variants.micro.neovim;
+
+      # GitHub Pages site
+      pages = mkPages system;
     });
 
     # NVF Modules for reuse
