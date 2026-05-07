@@ -114,10 +114,11 @@ in {
       lualine.winbar.enable = true;
     };
 
+    visuals.nvim-web-devicons.enable = true;
+
     # Eager plugins
     startPlugins = with pkgs.vimPlugins; [
       plenary-nvim # Many plugins depend on this
-      nvim-web-devicons
       vim-eunuch # File operations, no setup needed
     ];
 
