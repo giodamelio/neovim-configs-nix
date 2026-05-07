@@ -52,6 +52,9 @@ in {
       # File change detection
       autoread = true;
       updatetime = 100;
+
+      # Start with all folds open
+      foldlevelstart = 99;
     };
 
     # Theme - tokyonight
