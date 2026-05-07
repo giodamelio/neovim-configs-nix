@@ -16,7 +16,7 @@
     lazy.plugins = {
       "jj.nvim" = {
         package = vimPlugins.jj-nvim;
-        cmd = ["JJ"];
+        cmd = ["J"];
         setupModule = "jj";
         setupOpts = {};
       };
