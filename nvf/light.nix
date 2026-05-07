@@ -6,6 +6,7 @@
     ./navigation.nix
     ./treefmt.nix
     ./nix.nix
+    ./jj.nix
     ./neovide.nix
     ./quickfix.nix
   ];

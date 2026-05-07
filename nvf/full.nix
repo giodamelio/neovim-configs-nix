@@ -9,6 +9,7 @@
     ./nix.nix
     ./neotest.nix
     ./claude.nix
+    ./jj.nix
     ./extra-langs.nix
     ./neovide.nix
     ./quickfix.nix

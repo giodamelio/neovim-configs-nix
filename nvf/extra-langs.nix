@@ -14,13 +14,6 @@
 
     # Lazy plugins
     lazy.plugins = {
-      "jj.nvim" = {
-        package = vimPlugins.jj-nvim;
-        cmd = ["J"];
-        setupModule = "jj";
-        setupOpts = {};
-      };
-
       "vim-dadbod" = {
         package = pkgs.vimPlugins.vim-dadbod;
         cmd = ["DB" "DBUI"];
