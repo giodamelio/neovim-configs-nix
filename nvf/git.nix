@@ -10,8 +10,8 @@ in {
         src = pkgs.fetchFromGitHub {
           owner = "giodamelio";
           repo = "hunk.nvim";
-          rev = "f71cb42df146571f1a23db1c990f8128c417bf8f";
-          hash = "sha256-8UZAPSETDrXqYBSg/ohxng3TihKuhzezc8n4MxBI4u8=";
+          rev = "456e03cda11f15f53d0e072461ac1ebcb5bc99f3"; # main as of 2025-05-21
+          hash = "sha256-ALvTdHtwURrElRQDRusoPGJwVB/VBPW1v62d0hy+4Rg=";
         };
         nvimSkipModules = [
           "hunk"
@@ -19,6 +19,7 @@ in {
           "hunk.ui.help_bar"
           "hunk.ui.help"
           "hunk.ui.init"
+          "hunk.ui.layout"
         ];
       };
     };
@@ -32,7 +33,12 @@ in {
       neogit.enable = true;
       hunk-nvim = {
         enable = true;
-        setupOpts.ui.help_bar = true;
+        setupOpts = {
+          ui = {
+            help_bar = true;
+            tree.sort = "mtime";
+          };
+        };
       };
       gitlinker-nvim = {
         enable = true;
