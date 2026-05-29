@@ -17,6 +17,13 @@ vim.lsp.config("lexical", {
 	cmd = { "lexical" },
 })
 
+-- rledger LSP for beancount files
+vim.lsp.config("rledger", {
+	cmd = { "rledger-lsp" },
+	root_markers = { ".git", "*.beancount" },
+	filetypes = { "beancount" },
+})
+
 -- Note: rust-analyzer clippy is configured via vim.globals.rustaceanvim in lsp.nix
 -- Enable custom LSP servers
 vim.lsp.enable("nixd")
@@ -24,3 +31,4 @@ vim.lsp.enable("expert")
 vim.lsp.enable("nextls")
 vim.lsp.enable("emmet_ls")
 vim.lsp.enable("lexical")
+vim.lsp.enable("rledger")
