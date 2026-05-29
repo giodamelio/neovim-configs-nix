@@ -177,8 +177,8 @@ in {
       (nmap "<leader>de" (cmd "Trouble lsp_definitions toggle") "Definitions")
       (nmap "<leader>di" (cmd "Trouble lsp_implementations toggle") "Implementations")
       (nmap "<leader>dr" (cmd "Trouble lsp_references toggle") "References")
-      (nmapLua "<leader>dn" "vim.diagnostic.goto_next()" "Next diagnostic")
-      (nmapLua "<leader>dp" "vim.diagnostic.goto_prev()" "Previous diagnostic")
+      (nmapLua "<leader>dn" "vim.diagnostic.jump({ count = 1 })" "Next diagnostic")
+      (nmapLua "<leader>dp" "vim.diagnostic.jump({ count = -1 })" "Previous diagnostic")
 
       # === Snacks Picker: LSP ===
       (nmapLua "<leader>lD" (snacksPicker "lsp_definitions") "Show definitions")
