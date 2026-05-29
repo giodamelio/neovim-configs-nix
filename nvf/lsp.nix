@@ -200,6 +200,13 @@ in {
         elixirls.enable = false; # Using custom LSP config
       };
     };
+    # Re-create :LspInfo (removed in Neovim 0.11, replaced by :checkhealth vim.lsp)
+    luaConfigRC.lsp-info = ''
+      vim.api.nvim_create_user_command("LspInfo", function()
+        vim.cmd("checkhealth vim.lsp")
+      end, { desc = "Show LSP info (vim.lsp checkhealth)" })
+    '';
+
     # Custom LSP configurations via luaConfigRC
     luaConfigRC.custom-lsp =
       builtins.readFile ./lua/custom-lsp.lua
