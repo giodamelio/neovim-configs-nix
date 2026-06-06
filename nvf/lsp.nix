@@ -51,7 +51,8 @@ in {
       setupOpts = {
         keymap = {
           preset = "none";
-          "<Tab>" = ["select_and_accept" "fallback"];
+          # mkForce to override NVF's default <Tab> instead of concatenating with it.
+          "<Tab>" = lib.mkForce ["select_and_accept" "snippet_forward" "fallback"];
           "<C-space>" = ["show" "show_documentation" "hide_documentation"];
           "<C-e>" = ["hide"];
           "<Up>" = ["select_prev" "fallback"];
@@ -64,7 +65,11 @@ in {
         appearance.nerd_font_variant = "mono";
         completion = {
           documentation.auto_show = false;
+          # No preselect so <Tab> accepts the first item, not the second.
+          list.selection.preselect = false;
         };
+        # Single <Tab> shows the cmdline menu and selects the first match.
+        cmdline.keymap."<Tab>" = lib.mkForce ["show_and_insert_or_accept_single" "select_next" "fallback"];
         signature.enabled = true;
         fuzzy.implementation = "prefer_rust_with_warning";
       };
