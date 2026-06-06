@@ -166,6 +166,7 @@ in {
 
     # Lua config
     luaConfigRC = {
+      clipboard = builtins.readFile ./lua/clipboard.lua;
       debug-helpers = builtins.readFile ./lua/debug-helpers.lua;
       user-commands = builtins.readFile ./lua/user-commands.lua;
       persisted-picker = builtins.readFile ./lua/persisted-picker.lua;
