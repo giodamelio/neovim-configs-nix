@@ -9,6 +9,7 @@
     ./jj.nix
     ./neovide.nix
     ./quickfix.nix
+    ./toggles.nix
   ];
 
   config.vim = {
