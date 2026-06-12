@@ -47,4 +47,32 @@
     };
     meta.homepage = "https://github.com/NicolasGB/jj.nvim";
   };
+
+  review-nvim = pkgs.vimUtils.buildVimPlugin {
+    pname = "review.nvim";
+    version = "2025-06-12";
+    src = pkgs.fetchFromGitHub {
+      owner = "georgeguimaraes";
+      repo = "review.nvim";
+      # Latest on branch main as of 2025-06-12
+      rev = "8e4bc16c8f430208bb0361a3957d487bc458576d";
+      hash = "sha256-/iP4ALu1oGamZe34FvP32qrzmg6wCsa5mmDaVUhIt0c=";
+    };
+    # review.picker pulls in a picker backend not present at check time.
+    nvimSkipModules = ["review.picker"];
+    meta.homepage = "https://github.com/georgeguimaraes/review.nvim";
+  };
+
+  # Pinned because the repo's nixpkgs codediff predates the
+  # explorer.auto_refresh option used in nvf/ai.nix to stop the jj diff flicker.
+  # REMIND-ME-TO: drop the codediff pin nixpkg_version=vimPlugins.codediff-nvim@>=2.45.1
+  codediff-nvim = pkgs.vimPlugins.codediff-nvim.overrideAttrs (_old: {
+    version = "2.45.1";
+    src = pkgs.fetchFromGitHub {
+      owner = "esmuellert";
+      repo = "codediff.nvim";
+      rev = "29b06f37251f2e010f53a0892573b2ec03d165e2"; # v2.45.1
+      hash = "sha256-1F6z/rhZxiuI6W1ReyHP6EQFxys4qm3fbINxoy1hQZA=";
+    };
+  });
 }
