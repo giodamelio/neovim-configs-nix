@@ -1,0 +1,56 @@
+# Example requests against https://httpbin.org/
+# Open in the `full` variant; <leader>Rr sends the request under the cursor.
+
+@base = https://httpbin.org
+
+### GET
+GET {{base}}/get
+
+### GET with query parameters
+GET {{base}}/get?name=gio&lang=nix
+
+### GET with custom headers
+GET {{base}}/headers
+Accept: application/json
+X-Custom-Header: hello-from-kulala
+
+### POST JSON
+POST {{base}}/post
+Content-Type: application/json
+
+{
+  "user": "gio",
+  "editor": "neovim",
+  "fancy": true
+}
+
+### POST form-urlencoded
+POST {{base}}/post
+Content-Type: application/x-www-form-urlencoded
+
+field1=value1&field2=value2
+
+### Basic auth
+GET {{base}}/basic-auth/gio/secret
+Authorization: Basic gio secret
+
+### Bearer token
+GET {{base}}/bearer
+Authorization: Bearer my-token-123
+
+### Status code — swap 418 for any code to see how it renders
+GET {{base}}/status/418
+
+### Delayed response — shows the in-flight spinner
+GET {{base}}/delay/2
+
+### Response headers
+GET {{base}}/response-headers?Content-Type=application/json&X-Demo=kulala
+
+# @name uuidRequest
+### Capture a value to reuse below
+GET {{base}}/uuid
+
+### Reuse the captured uuid
+GET {{base}}/anything
+X-Request-Id: {{uuidRequest.response.body.$.uuid}}

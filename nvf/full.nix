@@ -10,6 +10,7 @@
     ./neotest.nix
     ./claude.nix
     ./ai.nix
+    ./kulala.nix
     ./jj.nix
     ./extra-langs.nix
     ./neovide.nix

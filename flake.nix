@@ -185,6 +185,7 @@
       nix = ./nvf/nix.nix;
       neotest = ./nvf/neotest.nix;
       claude = ./nvf/claude.nix;
+      kulala = ./nvf/kulala.nix;
       extra-langs = ./nvf/extra-langs.nix;
       full = ./nvf/full.nix;
       light = ./nvf/light.nix;
