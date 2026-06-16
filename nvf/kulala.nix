@@ -39,7 +39,13 @@ in {
         (key "<leader>RS" "<cmd>lua require('kulala').scratchpad()<cr>" "Open scratchpad")
       ];
       setupModule = "kulala";
-      setupOpts = {};
+      setupOpts = {
+        ui = {
+          winbar = true;
+          default_winbar_panes = ["body" "headers" "verbose" "report" "help"];
+          max_response_size = 65535;
+        };
+      };
     };
   };
 }
