@@ -8,6 +8,11 @@ in {
   config.vim = {
     binds.whichKey.register."<leader>R" = "REST (Kulala)";
 
+    # Kulala draws its pane bar into the response window's winbar, but lualine's
+    # breadcrumbs winbar (core.nix) overwrites it on every refresh. Exclude
+    # kulala's UI buffer (filetype e.g. json.kulala_ui) so the pane bar survives.
+    statusline.lualine.setupOpts.options.disabled_filetypes.winbar = ["kulala_ui"];
+
     # curl sends the requests; jq formats JSON in the response view.
     extraPackages = with pkgs; [curl jq];
 
