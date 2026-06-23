@@ -9,7 +9,7 @@ in {
     # Lazy plugins
     lazy.plugins."jj.nvim" = {
       package = vimPlugins.jj-nvim;
-      cmd = ["J"];
+      cmd = ["J" "Jbrowse" "Jread" "Jedit" "Jtabedit" "Jsplit" "Jvsplit" "Jdiff" "Jhdiff" "Jvdiff"];
       setupModule = "jj";
       setupOpts = {};
     };
