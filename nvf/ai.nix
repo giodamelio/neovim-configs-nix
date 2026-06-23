@@ -33,14 +33,14 @@ in {
           };
           inline.adapter = "claude_code";
         };
-        # Read the token from the env rather than hardcoding the secret.
         adapters = mkLuaInline ''
           {
             acp = {
               claude_code = function()
                 return require("codecompanion.adapters").extend("claude_code", {
                   env = {
-                    CLAUDE_CODE_OAUTH_TOKEN = "CLAUDE_CODE_OAUTH_TOKEN",
+                    -- Fetch the token from 1Password at launch via the `cmd:` prefix
+                    CLAUDE_CODE_OAUTH_TOKEN = "cmd:op read op://oyflrphtzxawut5aqmgvhji4he/rkunxmv5u6ybvueddvhq63pscm/credential --no-newline",
                   },
                 })
               end,
