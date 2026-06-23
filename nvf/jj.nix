@@ -19,6 +19,7 @@ in {
       (nmap "<leader>js" (cmd "J") "Jujutsu status")
       (nmap "<leader>jl" (cmd "J log") "Jujutsu log")
       (nmapLua "<leader>jj" "require('jj.picker').status()" "Jujutsu status picker")
+      (nmapLua "<leader>jh" "require('jj.picker').file_history()" "Jujutsu file history")
       (nmapLua "<leader>jL" "require('jj.cmd').log { revisions = \"all()\" }" "Jujutsu log all")
     ];
   };
