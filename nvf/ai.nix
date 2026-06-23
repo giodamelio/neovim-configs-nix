@@ -16,6 +16,13 @@ in {
       "<leader>ar" = "Review";
     };
 
+    # Visual mode whichkey groups
+    luaConfigRC.ai-whichkey-visual = ''
+      require("which-key").add({
+        { "<leader>a", group = "AI", mode = "x" },
+      })
+    '';
+
     # Claude Code over ACP: uses the Max subscription via CLAUDE_CODE_OAUTH_TOKEN
     # (from `claude setup-token`), not a metered API key.
     assistant.codecompanion-nvim = {
