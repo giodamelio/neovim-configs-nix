@@ -146,6 +146,7 @@ in {
       (nmapLua "<leader>f:" (snacksPicker "commands") "Find Commands")
       (nmapLua "<leader>fq" (snacksPicker "qflist") "Quickfix List")
       (nmap "<leader>fs" (cmd "PersistedPickerLoad") "Find session")
+      (nmapLua "<leader>fj" (snacksPicker "jumps") "Jump List")
 
       # === Snacks Picker: Git ===
       (nmapLua "<leader>fGb" (snacksPicker "git_branches") "Find Git branches")
