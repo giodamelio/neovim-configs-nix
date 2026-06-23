@@ -38,12 +38,13 @@
 
   jj-nvim = pkgs.vimUtils.buildVimPlugin {
     pname = "jj.nvim";
-    version = "2025-03-04";
+    version = "2026-06-23";
     src = pkgs.fetchFromGitHub {
       owner = "NicolasGB";
       repo = "jj.nvim";
-      rev = "bbba4051c862473637e98277f284d12b050588ca";
-      hash = "sha256-nokftWcAmmHX6UcH6O79xkLwbUpq1W8N9lf1e+NyGqE=";
+      # Latest on branch main as of 2026-06-23
+      rev = "f217b16699e714e32df5c7616c0f71b70d49e11f";
+      hash = "sha256-/SmwZ83bgPekRFld+DgPoIEskPu9M1Kl7srNSpk4d3A=";
     };
     meta.homepage = "https://github.com/NicolasGB/jj.nvim";
   };
