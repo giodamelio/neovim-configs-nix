@@ -21,6 +21,7 @@ in {
       (nmapLua "<leader>jj" "require('jj.picker').status()" "Jujutsu status picker")
       (nmapLua "<leader>jh" "require('jj.picker').file_history()" "Jujutsu file history")
       (nmapLua "<leader>jL" "require('jj.cmd').log { revisions = \"all()\" }" "Jujutsu log all")
+      (nmapLua "<leader>jt" "local cmd = require('jj.cmd'); cmd.j('tug'); cmd.log()" "Tug bookmarks up")
     ];
   };
 }
