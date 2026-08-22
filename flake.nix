@@ -163,7 +163,7 @@
       "vimPlugins.vim-mint" = vimPlugins.vim-mint;
       "vimPlugins.jj-nvim" = vimPlugins.jj-nvim;
       "vimPlugins.review-nvim" = vimPlugins.review-nvim;
-      "vimPlugins.codediff-nvim" = vimPlugins.codediff-nvim;
+      "vimPlugins.diffview-nvim" = vimPlugins.diffview-nvim;
 
       # Docker images
       docker-full = mkDockerImage system "full" variants.full.neovim;

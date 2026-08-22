@@ -49,31 +49,41 @@
     meta.homepage = "https://github.com/NicolasGB/jj.nvim";
   };
 
+  # diffview-plus is a maintained fork of diffview.nvim whose vcs adapters cover
+  # Jujutsu, which review.nvim's diffview backend needs; the nixpkgs diffview
+  # does git and hg only. Keeps the diffview-nvim pname so it drops straight
+  # into nvf's lazy spec of that name (see nvf/review.nix).
+  diffview-nvim = pkgs.vimPlugins.diffview-nvim.overrideAttrs (_old: {
+    # nvf's lazy spec is keyed `diffview-nvim` and matches on pname; nixpkgs
+    # spells it `diffview.nvim`, which only slips through because the stock
+    # module passes the package by name.
+    pname = "diffview-nvim";
+    version = "0.37";
+    src = pkgs.fetchFromGitHub {
+      owner = "dlyongemallo";
+      repo = "diffview-plus.nvim";
+      rev = "460b96c8285fbf0cd411bddfd9322408f37f81a5"; # v0.37
+      hash = "sha256-5ZYl7D/V5tFhlojwj6EvHXnQVvfdiLxzpAlNUejLJzI=";
+    };
+    # Nearly every diffview module needs the plugin script to have set
+    # DiffviewGlobal, so the fork's added modules fall outside the nixpkgs skip
+    # list. Check the entry point only rather than chase that list.
+    nvimRequireCheck = ["diffview"];
+    meta.homepage = "https://github.com/dlyongemallo/diffview-plus.nvim";
+  });
+
   review-nvim = pkgs.vimUtils.buildVimPlugin {
     pname = "review.nvim";
-    version = "2025-06-12";
+    version = "2026-08-21";
     src = pkgs.fetchFromGitHub {
-      owner = "georgeguimaraes";
+      owner = "giodamelio";
       repo = "review.nvim";
-      # Latest on branch main as of 2025-06-12
-      rev = "8e4bc16c8f430208bb0361a3957d487bc458576d";
-      hash = "sha256-/iP4ALu1oGamZe34FvP32qrzmg6wCsa5mmDaVUhIt0c=";
+      # Latest on fork branch feat/diff-backends as of 2026-08-21
+      rev = "d42e4df968a4f3c4b01de871be5dadbc4824fbab";
+      hash = "sha256-7iGCFjCOoL7zANNUCsUGaondJJtTQUT1WYhJQIcNmz8=";
     };
     # review.picker pulls in a picker backend not present at check time.
     nvimSkipModules = ["review.picker"];
-    meta.homepage = "https://github.com/georgeguimaraes/review.nvim";
+    meta.homepage = "https://github.com/giodamelio/review.nvim";
   };
-
-  # Pinned because the repo's nixpkgs codediff predates the
-  # explorer.auto_refresh option used in nvf/ai.nix to stop the jj diff flicker.
-  # REMIND-ME-TO: drop the codediff pin nixpkg_version=vimPlugins.codediff-nvim@>=2.45.1
-  codediff-nvim = pkgs.vimPlugins.codediff-nvim.overrideAttrs (_old: {
-    version = "2.45.1";
-    src = pkgs.fetchFromGitHub {
-      owner = "esmuellert";
-      repo = "codediff.nvim";
-      rev = "29b06f37251f2e010f53a0892573b2ec03d165e2"; # v2.45.1
-      hash = "sha256-1F6z/rhZxiuI6W1ReyHP6EQFxys4qm3fbINxoy1hQZA=";
-    };
-  });
 }
