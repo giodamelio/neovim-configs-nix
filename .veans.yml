@@ -1,0 +1,13 @@
+server: https://vikunja.gio.ninja
+project_id: 4
+project_identifier: NEOVIM
+view_id: 16
+buckets:
+    todo: 12
+    in_progress: 13
+    in_review: 15
+    done: 14
+    scrapped: 16
+bot:
+    username: bot-neovim-configs-nix
+    user_id: 3

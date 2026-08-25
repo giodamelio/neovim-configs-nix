@@ -2,11 +2,31 @@
   "hooks": {
     "PostToolUse": [
       {
-        "matcher": "Edit|Write",
         "hooks": [
           {
-            "type": "command",
-            "command": "cd \"$CLAUDE_PROJECT_DIR\" && nix fmt 2>/dev/null"
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" \u0026\u0026 nix fmt 2\u003e/dev/null",
+            "type": "command"
+          }
+        ],
+        "matcher": "Edit|Write"
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "command": "veans prime",
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "command": "veans prime",
+            "type": "command"
           }
         ]
       }
