@@ -47,6 +47,7 @@
           inherit system variant;
           unisonPkgs = unison-lang.packages.${system};
           vimPlugins = import ./plugins.nix {pkgs = pkgsFor system;};
+          extraPkgs = import ./packages.nix {pkgs = pkgsFor system;};
         };
       };
 
@@ -152,10 +153,13 @@
     packages = forAllSystems (system: let
       variants = mkVariants system;
       vimPlugins = import ./plugins.nix {pkgs = pkgsFor system;};
+      extraPkgs = import ./packages.nix {pkgs = pkgsFor system;};
     in {
       default = variants.full.neovim;
       light = variants.light.neovim;
       micro = variants.micro.neovim;
+
+      inherit (extraPkgs) qlue-ls;
 
       # Export vim plugins namespaced like nixpkgs
       "vimPlugins.gitlinker-nvim" = vimPlugins.gitlinker-nvim;
@@ -163,6 +167,7 @@
       "vimPlugins.vim-mint" = vimPlugins.vim-mint;
       "vimPlugins.jj-nvim" = vimPlugins.jj-nvim;
       "vimPlugins.review-nvim" = vimPlugins.review-nvim;
+      "vimPlugins.qluels-nvim" = vimPlugins.qluels-nvim;
       "vimPlugins.diffview-nvim" = vimPlugins.diffview-nvim;
 
       # Docker images

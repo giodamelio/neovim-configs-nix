@@ -72,6 +72,27 @@
     meta.homepage = "https://github.com/dlyongemallo/diffview-plus.nvim";
   });
 
+  qluels-nvim = pkgs.vimUtils.buildVimPlugin {
+    pname = "qluels-nvim";
+    version = "2026-04-22";
+    src = pkgs.fetchFromGitHub {
+      owner = "DeaconDesperado";
+      repo = "qluels-nvim";
+      # Latest on branch main as of 2026-08-30
+      rev = "5711c6bd765ea73df33fd2a1795d6fdf28af45e2";
+      hash = "sha256-mOvMlQBreiAa/RwjcJn8sBI261AEfV806tWHHCHtDWI=";
+    };
+    # Each picker backend requires its own plugin up front; picker/init.lua
+    # probes them with pcall and falls back to vim.ui.select, so none are
+    # available at check time.
+    nvimSkipModules = [
+      "qluels.picker._fzf"
+      "qluels.picker._snacks"
+      "qluels.picker._telescope"
+    ];
+    meta.homepage = "https://github.com/DeaconDesperado/qluels-nvim";
+  };
+
   review-nvim = pkgs.vimUtils.buildVimPlugin {
     pname = "review.nvim";
     version = "2026-08-21";

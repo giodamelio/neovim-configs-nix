@@ -12,6 +12,7 @@
     ./ai.nix
     ./kulala.nix
     ./jj.nix
+    ./sparql.nix
     ./extra-langs.nix
     ./neovide.nix
     ./quickfix.nix
