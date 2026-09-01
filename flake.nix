@@ -159,7 +159,7 @@
       light = variants.light.neovim;
       micro = variants.micro.neovim;
 
-      inherit (extraPkgs) qlue-ls;
+      inherit (extraPkgs) qlue-ls swls;
 
       # Export vim plugins namespaced like nixpkgs
       "vimPlugins.gitlinker-nvim" = vimPlugins.gitlinker-nvim;
@@ -168,6 +168,7 @@
       "vimPlugins.jj-nvim" = vimPlugins.jj-nvim;
       "vimPlugins.review-nvim" = vimPlugins.review-nvim;
       "vimPlugins.qluels-nvim" = vimPlugins.qluels-nvim;
+      "vimPlugins.swls-nvim" = vimPlugins.swls-nvim;
       "vimPlugins.diffview-nvim" = vimPlugins.diffview-nvim;
 
       # Docker images

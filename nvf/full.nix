@@ -13,6 +13,7 @@
     ./kulala.nix
     ./jj.nix
     ./sparql.nix
+    ./rdf.nix
     ./extra-langs.nix
     ./neovide.nix
     ./quickfix.nix

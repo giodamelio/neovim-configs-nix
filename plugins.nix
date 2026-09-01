@@ -93,6 +93,19 @@
     meta.homepage = "https://github.com/DeaconDesperado/qluels-nvim";
   };
 
+  swls-nvim = pkgs.vimUtils.buildVimPlugin {
+    pname = "swls.nvim";
+    version = "2026-05-21";
+    src = pkgs.fetchFromGitHub {
+      owner = "SemanticWebLanguageServer";
+      repo = "swls.nvim";
+      # Latest on branch master as of 2026-08-31
+      rev = "99aeff753aacfe8114d8c57d564b50344d4154c6";
+      hash = "sha256-OFy5svuX5R0IsG+EUeo5z7SNksWFiQiXMBK1Ve3P1cs=";
+    };
+    meta.homepage = "https://github.com/SemanticWebLanguageServer/swls.nvim";
+  };
+
   review-nvim = pkgs.vimUtils.buildVimPlugin {
     pname = "review.nvim";
     version = "2026-08-21";
